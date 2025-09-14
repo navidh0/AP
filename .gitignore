@@ -7,11 +7,8 @@ db.sqlite3
 # Virtual environments
 venv/
 .venv/
+.env/
 env/
-ENV/
-
-# Media (user uploads)
-media/CACHE
 
 # Tailwind/Django-Tailwind generated files
 theme/static/css/dist/
