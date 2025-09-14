@@ -1,14 +1,18 @@
-# Django/Python specifics
+# Python specifics
 __pycache__/
+
+# Django specifics
 db.sqlite3
 *.db
 *.sqlite3
+/media/          # User-uploaded files
+/staticfiles/    # Collected static files 
 
 # Virtual environments
 venv/
 .venv/
-.env/
 env/
+.env             # environment file
 
 # Tailwind/Django-Tailwind generated files
 theme/static/css/dist/
@@ -17,4 +21,4 @@ node_modules/
 # Editor/IDE files
 .vscode/
 .idea/
-
+*.log
