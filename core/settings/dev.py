@@ -11,3 +11,11 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Auto-reload browser during development
+INSTALLED_APPS += ['django_browser_reload']
+
+# Add django_browser_reload middleware
+MIDDLEWARE += [
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
+]

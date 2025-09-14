@@ -1,0 +1,88 @@
+<nav class="bg-surface border-b border-neutral-200">
+  <div class="flex items-center justify-between p-5 h-16">
+    <!-- Logo / Brand -->
+    <div class="flex items-center">
+      <a href="/" class="flex items-center space-x-3 group">
+        <div class="w-7 h-7 md:w-8 md:h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 md:w-6 md:h-6 text-primary-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+        </div>
+        <span class="text-lg md:text-xl font-bold text-neutral-900 group-hover:text-primary-600 transition-colors">
+          Library System
+        </span>
+      </a>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex space-x-1">
+      <a href="/" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+        Home
+      </a>
+      <a href="#books" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+        Books
+      </a>
+
+      {% url 'library:add_book' as add_url %}
+      <a href="{{ add_url }}{% if query_params %}?{{ query_params }}{% endif %}{% if page_obj.number %}{% if query_params %}&{% else %}?{% endif %}page={{ page_obj.number }}{% endif %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+        Add Book
+      </a>
+      <a href="#search-box" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+        Search
+      </a>
+    </div>
+
+    <!-- Mobile menu button -->
+    <div class="md:hidden">
+      <button id="menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="fixed top-0 right-0 h-screen w-75 sm:w-80 bg-surface border-l border-neutral-200 transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden">
+    <div class="flex items-center justify-between p-4 border-b border-neutral-200">
+      <button id="close-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h2 class="text-lg font-semibold text-neutral-900">Menu</h2>
+    </div>
+
+    <div class="px-4 pt-6 pb-3 space-y-2 flex flex-col">
+      <a href="/" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+        <span>Home</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      </a>
+      <a href="#books" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+        <span>Books</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+      </a>
+
+      {% url 'library:add_book' as add_url %}
+      <a href="{{ add_url }}{% if query_params %}?{{ query_params }}{% endif %}{% if page_obj.number %}{% if query_params %}&{% else %}?{% endif %}page={{ page_obj.number }}{% endif %}" 
+        class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+        <span>Add Book</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+      </a>
+      <a href="#search-box" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+        <span>Search</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div id="menu-overlay" class="fixed inset-0 backdrop-blur-sm z-40 hidden md:hidden"></div>
+</nav>
