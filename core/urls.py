@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Landing page (root URL)
-    path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
 
     # App routes
     path('users/', include(('users.urls', 'users'), namespace='users')),
