@@ -1,18 +1,11 @@
 # Django/Python specifics
-*.pyc
-*.pyo
-*.pot
-*.log
 __pycache__/
-*.egg-info/
 db.sqlite3
 *.db
 *.sqlite3
-debug.log
 
 # Virtual environments
 venv/
-.env
 .venv/
 env/
 ENV/
@@ -23,26 +16,8 @@ media/CACHE
 # Tailwind/Django-Tailwind generated files
 theme/static/css/dist/
 node_modules/
-yarn.lock
-yarn-error.log
 
 # Editor/IDE files
 .vscode/
 .idea/
-*.swp
-*.swo
-*.sublime-project
-*.sublime-workspace
 
-# OS/Backup files
-.DS_Store
-Thumbs.db
-*.bak
-*.tmp
-
-# Testing/Coverage
-.coverage
-htmlcov/
-.tox/
-.pytest_cache/
-coverage.xml
