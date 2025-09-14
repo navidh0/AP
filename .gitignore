@@ -1,42 +1,48 @@
-# Python
-__pycache__/
-*.py[cod]
+# Django/Python specifics
+*.pyc
 *.pyo
-*.pyd
-*.env
-*.venv
-*.egg-info/
-*.egg
-
-# Django
-*.sqlite3
-db.sqlite3
-media/
-staticfiles/
+*.pot
 *.log
+__pycache__/
+*.egg-info/
+db.sqlite3
+*.db
+*.sqlite3
+debug.log
 
-# Virtual environment
+# Virtual environments
 venv/
+.env
+.venv/
 env/
 ENV/
 
-# IDE / Editor folders
+# Media (user uploads)
+media/CACHE
+
+# Tailwind/Django-Tailwind generated files
+theme/static/css/dist/
+node_modules/
+yarn.lock
+yarn-error.log
+
+# Editor/IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 *.sublime-project
 *.sublime-workspace
 
-# OS files
+# OS/Backup files
 .DS_Store
 Thumbs.db
+*.bak
+*.tmp
 
-# Pytest / coverage
-htmlcov/
+# Testing/Coverage
 .coverage
-pytest_cache/
-nosetests.xml
+htmlcov/
+.tox/
+.pytest_cache/
 coverage.xml
-
-# Pipenv / Poetry
-Pipfile.lock
-poetry.lock
