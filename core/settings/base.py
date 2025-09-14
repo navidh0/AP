@@ -134,3 +134,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Node.js path for Tailwind
 # ------------------------------
 NPM_BIN_PATH = which("npm")
+
+
+# ------------------------------
+# Auth User Model
+# ------------------------------
+AUTH_USER_MODEL = 'users.User'
+
+
