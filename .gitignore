@@ -1,42 +1,24 @@
-# Python
+# Python specifics
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.env
-*.venv
-*.egg-info/
-*.egg
 
-# Django
-*.sqlite3
+# Django specifics
 db.sqlite3
-media/
-staticfiles/
-*.log
+*.db
+*.sqlite3
+/media/        
+/staticfiles/    
 
-# Virtual environment
+# Virtual environments
+.env          
 venv/
+.venv/
 env/
-ENV/
 
-# IDE / Editor folders
+# Tailwind/Django-Tailwind generated files
+theme/static/css/dist/
+node_modules/
+
+# Editor/IDE files
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Pytest / coverage
-htmlcov/
-.coverage
-pytest_cache/
-nosetests.xml
-coverage.xml
-
-# Pipenv / Poetry
-Pipfile.lock
-poetry.lock
+*.log
