@@ -1,9 +1,7 @@
 from django.db import models
-
-from django.db import models
 from django.utils import timezone
 from users.models import User
-
+from django.db.models import Q
 
 # -----------------------------
 # Doctor QuerySet & Manager
@@ -18,9 +16,9 @@ class DoctorQuerySet(models.QuerySet):
         qs = self
         if name:
             qs = qs.filter(
-                models.Q(user__username__icontains=name)
-                | models.Q(user__first_name__icontains=name)
-                | models.Q(user__last_name__icontains=name)
+                Q(user__username__icontains=name)
+                | Q(user__first_name__icontains=name)
+                | Q(user__last_name__icontains=name)
             )
         if specialty:
             qs = qs.filter(specialty__icontains=specialty)
