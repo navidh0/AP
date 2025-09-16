@@ -4,6 +4,6 @@ env = environ.Env()
 environ.Env.read_env('.env')
 
 if env("PROD", cast=bool):
-    from .prod import *
+    from .settings.prod import *
 else:
-    from .dev import *
+    from .settings.dev import *
