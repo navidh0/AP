@@ -53,6 +53,14 @@ class Doctor(models.Model):
 
     objects = DoctorManager()
 
+    @property
+    def full_name(self):
+        """
+        Returns the full name from the related User model.
+        """
+        return self.user.get_full_name()
+
+
     class Meta:
         ordering = ["specialty", "user__username"]
 
