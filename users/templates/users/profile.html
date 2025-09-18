@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile - MediCare{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-primary-50 to-secondary-50 py-8 px-4 flex items-center justify-center">
+    <div class="max-w-2xl w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="mt-6 text-2xl sm:text-3xl font-bold text-neutral-900">
+                Update Your Profile
+            </h2>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-surface rounded-2xl shadow-md p-8">
+
+            <!-- Sign Up Form -->
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                <!-- First Name -->
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.first_name.label }}
+                    </label>
+                    {{ form.first_name }}
+                    {% for error in form.first_name.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.last_name.label }}
+                    </label>
+                    {{ form.last_name }}
+                    {% for error in form.last_name.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Username -->
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.username.label }}
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        {% for error in form.username.errors %}
+                            <p class="text-sm text-danger-600">{{ error }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p class="mt-1 text-xs text-neutral-500">{{ form.username.help_text}}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Phone Number -->
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.phone_number.label }}
+                    </label>
+                    {{ form.phone_number }}
+                    {% for error in form.phone_number.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- SSN -->
+                <div>
+                    <label for="{{ form.ssn.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.ssn.label }}
+                    </label>
+                    {{ form.ssn }}
+                    {% for error in form.ssn.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Birth Date -->
+                <div>
+                    <label for="{{ form.birth_date.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.birth_date.label }}
+                    </label>
+                    {{ form.birth_date }}
+                    {% for error in form.birth_date.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Gender -->
+                <div>
+                    <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.gender.label }}
+                    </label>
+                    {{ form.gender }}
+                    {% for error in form.gender.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Role -->
+                <div>
+                    <label for="{{ form.role.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+                        {{ form.role.label }}
+                    </label>
+                    {{ form.role }}
+                    {% for error in form.role.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Avatar -->
+                 <div>
+                    <label class="block text-sm font-medium text-neutral-700">
+                        {{ form.avatar.label }}
+                    </label>
+                    <div class="mt-2 relative">
+                        <label for="{{ form.avatar.id_for_label }}"
+                            class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center hover:border-neutral-400 transition-colors duration-200">
+                            <svg class="w-8 h-8 text-neutral-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-sm font-medium text-neutral-600">Click to upload</span>
+                            <span class="text-xs text-neutral-500 mt-1">PNG, JPG up to 5MB</span>
+                        </label>
+                        <div>
+                            {{ form.avatar }}
+                        </div>
+                        <div id="file-name" class="text-sm text-neutral-600 mt-2 text-center">No file chosen</div>
+                    </div>
+                    {% for error in form.avatar.errors %}
+                        <p class="text-sm text-danger-600">{{ error }}</p>
+                    {% endfor %}
+                 </div>
+
+                <!-- Submit button -->
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent
+                                rounded-xl text-sm font-medium text-white bg-primary-600 hover:bg-primary-700
+                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500
+                                transition-colors">
+                    Update Your Account
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById("{{ form.avatar.id_for_label }}");
+      const fileNameDisplay = document.getElementById('file-name');
+
+      if (fileInput) {
+        fileInput.addEventListener('change', function() {
+          if (this.files && this.files.length > 0) {
+            const fileName = this.files[0].name;
+            fileNameDisplay.textContent = fileName;
+            fileNameDisplay.className = 'text-sm text-neutral-600 font-medium mt-2 text-center';
+          } else {
+            fileNameDisplay.textContent = 'No file chosen';
+            fileNameDisplay.className = 'text-sm text-neutral-600 mt-2 text-center';
+          }
+        });
+      }
+
+      {% if form.instance.avatar %}
+        const fullPath = '{{ form.instance.avatar.name }}';
+        const fileName = fullPath.replace(/^.*[\\\/]/, '');
+        fileNameDisplay.textContent = fileName || 'Current image';
+        fileNameDisplay.className = 'text-sm text-neutral-600 font-medium mt-2 text-center';
+      {% endif %}
+  });
+</script>
+
+{% endblock %}
