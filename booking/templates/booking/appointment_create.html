@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Appointment - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl font-bold text-neutral-900 mb-2">Book Your Appointment</h1>
+        <p class="text-neutral-600">Confirm your appointment details and add any special notes</p>
+    </div>
+
+    <!-- Appointment Details Card -->
+    <div class="bg-surface rounded-2xl shadow-md p-8 mb-8">
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Appointment Details</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Doctor Information -->
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-neutral-800 mb-4">Doctor Information</h3>
+                    <div class="flex items-center space-x-4 p-4 bg-neutral-50 rounded-lg">
+                        <img 
+                            src="{{ doctor.user.get_avatar_url }}" 
+                            alt="{{ doctor.user.get_full_name }}"
+                            class="w-16 h-16 rounded-full object-cover border-2 border-primary-200"
+                        >
+                        <div>
+                            <h4 class="text-lg font-semibold text-neutral-900">
+                                Dr. {{ doctor.user.get_full_name }}
+                            </h4>
+                            <p class="text-primary-600 font-medium">{{ doctor.specialty }}</p>
+                            <p class="text-sm text-neutral-600">Fee: ${{ doctor.fee }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patient Information -->
+                <div>
+                    <h3 class="text-lg font-semibold text-neutral-800 mb-4">Your Information</h3>
+                    <div class="p-4 bg-neutral-50 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <img 
+                                src="{{ patient.get_avatar_url }}" 
+                                alt="{{ patient.get_full_name }}"
+                                class="w-12 h-12 rounded-full object-cover border-2 border-primary-200"
+                            >
+                            <div>
+                                <h4 class="font-semibold text-neutral-900">
+                                    {{ patient.get_full_name }}
+                                </h4>
+                                <p class="text-sm text-neutral-600">{{ patient.email }}</p>
+                                <p class="text-sm text-neutral-600">{{ patient.phone_number }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Time Slot Information -->
+            <div>
+                <h3 class="text-lg font-semibold text-neutral-800 mb-4">Selected Time Slot</h3>
+                <div class="p-6 bg-primary-50 rounded-lg border border-primary-200">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary-600 mb-2">
+                            {{ timeslot.start_time|date:"M d" }}
+                        </div>
+                        <div class="text-lg text-neutral-700 mb-2">
+                            {{ timeslot.start_time|date:"l" }}
+                        </div>
+                        <div class="text-2xl font-bold text-neutral-900 mb-4">
+                            {{ timeslot.start_time|time:"H:i" }} - {{ timeslot.end_time|time:"H:i" }}
+                        </div>
+                        <div class="text-sm text-neutral-600">
+                            Duration: {{ timeslot.end_time|timeuntil:timeslot.start_time }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Important Notes -->
+                <div class="mt-6 p-4 bg-warning-50 border border-warning-200 rounded-lg">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-warning-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <h4 class="font-semibold text-warning-800 mb-1">Important</h4>
+                            <ul class="text-sm text-warning-700 space-y-1">
+                                <li>• Please arrive 15 minutes before your appointment</li>
+                                <li>• Bring a valid ID and insurance card</li>
+                                <li>• Cancel at least 24 hours in advance if needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="bg-surface rounded-2xl shadow-md p-8">
+        <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Complete Your Booking</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Notes Field -->
+            <div>
+                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                    Additional Notes (Optional)
+                </label>
+                <textarea 
+                    id="{{ form.notes.id_for_label }}"
+                    name="{{ form.notes.name }}"
+                    rows="4"
+                    placeholder="Any specific concerns, symptoms, or information you'd like the doctor to know..."
+                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                >{{ form.notes.value|default:'' }}</textarea>
+                {% if form.notes.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {{ form.notes.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Terms and Conditions -->
+            <div class="p-4 bg-neutral-50 rounded-lg">
+                <div class="flex items-start">
+                    <input 
+                        type="checkbox" 
+                        id="terms" 
+                        name="terms" 
+                        required
+                        class="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                    >
+                    <label for="terms" class="ml-3 text-sm text-neutral-700">
+                        I agree to the 
+                        <a href="#" class="text-primary-600 hover:text-primary-700 underline">Terms and Conditions</a> 
+                        and understand that I will be charged ${{ doctor.fee }} for this consultation.
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                <a href="{% url 'booking:doctor_detail' doctor.pk %}" 
+                   class="flex-1 sm:flex-none px-6 py-3 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium text-center">
+                    Back to Time Slots
+                </a>
+                <button 
+                    type="submit" 
+                    class="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                >
+                    Confirm Booking
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
