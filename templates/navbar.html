@@ -33,6 +33,9 @@
 
     <!-- Desktop Navigation -->
     <div class="hidden md:flex space-x-1">
+
+    <div class="hidden lg:flex flex-1 justify-center gap-x-5">
+
       <a href="/" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
         Home
       </a>
@@ -41,6 +44,9 @@
       </a>
 
       <a href="{% url 'booking:doctor_list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+
+      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+
         Booking
       </a>
       <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
@@ -60,6 +66,46 @@
 
     <!-- Mobile menu button -->
     <div class="md:hidden">
+    <div class="hidden lg:flex items-center justify-between gap-x-5">
+      {% if user.is_authenticated %}
+        <!-- Update Profile -->
+        <a href="{% url 'users:profile' %}"
+          class="px-2 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          Update Profile
+        </a>
+
+        <!-- Change Password -->
+        <a href="{% url 'users:password_change' %}"
+          class="px-2 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          Change Password
+        </a>
+
+        <!-- Logout -->
+        <form method="post" action="{% url 'users:logout' %}">
+          {% csrf_token %}
+          <button type="submit"
+            class="px-2 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+            Logout
+          </button>
+        </form>
+      {% else %}
+        <!-- Login -->
+        <a href="{% url 'users:login' %}"
+          class="px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          Login
+        </a>
+
+        <!-- Sign Up -->
+        <a href="{% url 'users:signup' %}"
+          class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">
+          Sign Up
+        </a>
+      {% endif %}
+    </div>
+
+
+    <!-- Mobile menu button -->
+    <div class="lg:hidden">
       <button id="menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -69,7 +115,11 @@
   </div>
 
   <!-- Mobile menu -->
+
   <div id="mobile-menu" class="fixed top-0 right-0 h-screen w-60 xs:w-75 sm:w-80 bg-surface border-l border-neutral-200 transform translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden">
+
+  <div id="mobile-menu" class="fixed top-0 right-0 h-screen w-60 xs:w-75 sm:w-80 bg-surface border-l border-neutral-200 transform translate-x-full transition-transform duration-300 ease-in-out z-50 lg:hidden">
+
     <div class="flex items-center justify-between p-4 border-b border-neutral-200">
       <button id="close-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +143,11 @@
         </svg>
       </a>
 
+
       <a href="{% url 'booking:doctor_list' %}" 
+
+      <a href="" 
+
         class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
         <span>Booking</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,4 +182,72 @@
   </div>
 
   <div id="menu-overlay" class="fixed inset-0 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+
+        {% if user.is_authenticated %}
+          <!-- Update Profile -->
+          <a href="{% url 'users:profile' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>Update Profile</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5.121 17.804A6 6 0 0112 15a6 6 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </a>
+
+          <!-- Change Password -->
+          <a href="{% url 'users:password_change' %}"
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>Change Password</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <g id="Change_password">
+                  <path d="M464.4326,147.54a9.8985,9.8985,0,0,0-17.56,9.1406,214.2638,214.2638,0,0,1-38.7686,251.42c-83.8564,83.8476-220.3154,83.874-304.207-.0088a9.8957,9.8957,0,0,0-16.8926,7.0049v56.9a9.8965,9.8965,0,0,0,19.793,0v-34.55A234.9509,234.9509,0,0,0,464.4326,147.54Z"/>
+                  <path d="M103.8965,103.9022c83.8828-83.874,220.3418-83.8652,304.207-.0088a9.8906,9.8906,0,0,0,16.8926-6.9961v-56.9a9.8965,9.8965,0,0,0-19.793,0v34.55C313.0234-1.3556,176.0547,3.7509,89.9043,89.9012A233.9561,233.9561,0,0,0,47.5674,364.454a9.8985,9.8985,0,0,0,17.56-9.1406A214.2485,214.2485,0,0,1,103.8965,103.9022Z"/>
+                  <path d="M126.4009,254.5555v109.44a27.08,27.08,0,0,0,27,27H358.5991a27.077,27.077,0,0,0,27-27v-109.44a27.0777,27.0777,0,0,0-27-27H153.4009A27.0805,27.0805,0,0,0,126.4009,254.5555ZM328,288.13a21.1465,21.1465,0,1,1-21.1465,21.1464A21.1667,21.1667,0,0,1,328,288.13Zm-72,0a21.1465,21.1465,0,1,1-21.1465,21.1464A21.1667,21.1667,0,0,1,256,288.13Zm-72,0a21.1465,21.1465,0,1,1-21.1465,21.1464A21.1667,21.1667,0,0,1,184,288.13Z"/>
+                  <path d="M343.6533,207.756V171.7538a87.6533,87.6533,0,0,0-175.3066,0V207.756H188.14V171.7538a67.86,67.86,0,0,1,135.7208,0V207.756Z"/>
+                </g>
+            </svg>
+          </a>
+
+          <!-- Logout -->
+          <form method="post" action="{% url 'users:logout' %}" class="w-full">
+            {% csrf_token %}
+            <button type="submit"
+              class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+              <span>Logout</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+            </button>
+          </form>
+
+        {% else %}
+          <!-- Login -->
+          <a href="{% url 'users:login' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>Login</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+          </a>
+
+          <!-- Sign Up -->
+          <a href="{% url 'users:signup' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors w-full justify-end">
+            <span>Sign Up</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    
+  </div>
+
+  <div id="menu-overlay" class="fixed inset-0 backdrop-blur-sm z-40 hidden lg:hidden"></div>
 </nav>

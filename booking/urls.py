@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 app_name = 'booking'
-
 urlpatterns = [
     # Doctor listing and detail views
     path('doctors/', views.DoctorListView.as_view(), name='doctor_list'),
@@ -15,3 +14,7 @@ urlpatterns = [
     # AJAX endpoints
     path('api/book/', views.book_appointment_ajax, name='book_appointment_ajax'),
 ]
+urlpatterns = [
+
+]
+
