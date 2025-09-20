@@ -99,7 +99,7 @@ class Timeslot(models.Model):
     def is_future(self):
         """Check if this timeslot is still in the future."""
         return self.start_time > timezone.now()
-=======
+
 from users.models import User
 from django.db.models import Q
 
