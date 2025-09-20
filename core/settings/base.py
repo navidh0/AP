@@ -142,3 +142,14 @@ NPM_BIN_PATH = which("npm")
 AUTH_USER_MODEL = 'users.User'
 
 
+# --------------------------
+# Authentication URL settings
+# --------------------------
+LOGIN_REDIRECT_URL = "home"
+LOGIN_URL = "users:login"
+LOGOUT_REDIRECT_URL = "home"
+
+# --------------------------
+# Gmail settings
+# --------------------------
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
