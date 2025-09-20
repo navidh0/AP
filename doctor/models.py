@@ -100,3 +100,108 @@ class Timeslot(models.Model):
     def is_future(self):
         """Check if this timeslot is still in the future."""
         return self.start_time > timezone.now()
+
+
+
+
+
+#+++++++++++++++++++++++++++Comment--------------------
+
+
+
+# -----------------------------
+# Comment QuerySet & Manager
+# -----------------------------
+class CommentQuerySet(models.QuerySet): #return rows of data from specifc models
+    def get_for_doctor(self, doctor):
+        """ return comments for specific doctor """
+        return self.filter(doctor=doctor)
+
+    def by_rating(self, min_rating=None, max_rating=None):
+        """ filter the doctor by rating """
+        qs = self
+        if min_rating:
+            qs = qs.filter(doctor_rating__gte=min_rating)
+        if max_rating:
+            qs = qs.filter(doctor_rating__lte=max_rating)
+        return qs
+
+    def recent(self, days=30):
+        """ Return the comment for specific last days """
+        from datetime import timedelta
+        cutoff_date = timezone.now() - timedelta(days=days)
+        return self.filter(created_at__gte=cutoff_date)    
+
+
+
+
+class CommentManager(models.Manager): #handle the relation between model and database 
+    def get_queryset(self):
+        return CommentQuerySet(self.model, using=self._db)
+
+    def get_for_doctor(self, doctor):
+        return  self.get_queryset().get_for_doctor(doctor)
+
+    def by_rating(self, min_rating=None, max_rating=None):
+        return self.get_queryset().by_rating(min_rating, max_rating)
+
+    def recent(self, days=30):
+        return self.get_queryset().recent(days)
+
+
+
+
+# -----------------------------
+# Comment models
+# -----------------------------
+class Comment(models.Model):
+    #This static data about doctor likert scale 
+    #DOCTOR_LIKERT_RATE = [(i, str(i)) for i in range(1, 6)]
+    DOCTOR_LIKERT_RATE = [
+        (1, "Very Poor"),
+        (2, "Poor"),
+        (3, "Average"),
+        (4, "Good"),
+        (5, "Excellent"),
+    ]
+
+
+
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='comments')
+
+    user = models.ForeignKey(User,
+        on_delete=models.CASCADE,
+        related_name='doctor_comment',
+        limit_choices_to={'role': 'patient'}
+      )
+
+    title = models.CharField(max_length=200, help_text="Brief title for comment")
+    description = models.TextField(help_text="Detail review of the doctor ")
+    doctor_rating = models.IntegerField(choices=DOCTOR_LIKERT_RATE,
+        default=1,
+        help_text="Rate the doctor from 1(Very bad ) to 5(Excellent)"
+        )
+
+    objects = CommentManager()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    is_anonymous = models.BooleanField(
+        default=False,
+        help_text="Hide user identity in public display "
+    )
+
+
+    def __str__(self):
+        return f"{self.user.username}'s review of Dr. {self.doctor.user.get_full_name() or self.doctor.user.username}"
+    
+    def get_display_name(self):
+        """ Get display name based on anonimity setting """
+        if self.is_anonymous:
+            return "Anonymous Patient"
+        return self.user.get_full_name() or self.user.username 
+    
+    def get_display_rating(self):
+         return dict(self.DOCTOR_LIKERT_RATE)[self.doctor_rating]
+
