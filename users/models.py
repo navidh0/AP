@@ -1,7 +1,9 @@
-from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, EmailValidator, FileExtensionValidator
+from django.contrib.auth.models import AbstractUser
 from django.templatetags.static import static
+from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -16,13 +18,13 @@ class User(AbstractUser):
         ("female", "Female"),
     ]
 
-    # Override AbstractUser defaults → make required
-    first_name = models.CharField(max_length=150, blank=False, null=False)
-    last_name = models.CharField(max_length=150, blank=False, null=False)
+    # Override AbstractUser fields to change defaults
+    first_name = models.CharField(max_length=150, blank=False, null=False)  # make required
+    last_name = models.CharField(max_length=150, blank=False, null=False)   # make required
+    is_active = models.BooleanField(default=False)  # default True in AbstractUser → we set False
 
-    #Extra Fields 
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="patient")
-    
+    # Extra Fields 
+
     avatar = models.ImageField(
         upload_to="avatar/users/", 
         null=True, 
@@ -63,7 +65,10 @@ class User(AbstractUser):
         null=False,
         validators=[EmailValidator(message="Enter a valid email address.")],
     )
-    
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="patient")
+    is_phone_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
 
@@ -74,3 +79,16 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+
+
+class OTP(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    expire_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        return self.expire_date >= timezone.now()
+
+    def __str__(self):
+        return f"OTP for {self.user.phone_number} - {self.code}"

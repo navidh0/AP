@@ -19,8 +19,9 @@
         <!-- Form Container -->
         <div class="bg-surface rounded-2xl shadow-md p-8">
 
+            <!-- To Do later -->
             <!-- Google Sign Up Button -->
-            <a href=""
+            <!-- <a href=""
                class="flex items-center justify-center gap-3 w-full border border-neutral-200
                       rounded-xl py-3 px-4 text-neutral-700 font-medium hover:bg-neutral-50
                       transition-colors mb-6 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
@@ -34,14 +35,14 @@
                              7.445-7.445 0-.504-.054-.945-.144-1.353z"/>
                 </svg>
                 <span class="text-sm sm:text-base">Sign up with Google</span>
-            </a>
+            </a> -->
 
             <!-- Divider -->
-            <div class="flex items-center my-6">
+            <!-- <div class="flex items-center my-6">
                 <div class="flex-grow border-t border-neutral-200"></div>
                 <span class="mx-4 text-neutral-500 text-sm">Or continue with email</span>
                 <div class="flex-grow border-t border-neutral-200"></div>
-            </div>
+            </div> -->
 
             <!-- Sign Up Form -->
             <form method="post" enctype="multipart/form-data" class="space-y-4">
@@ -151,29 +152,26 @@
                 </div>
 
                 <!-- Avatar -->
-                 <div>
-                    <label class="block text-sm font-medium text-neutral-700">
-                        {{ form.avatar.label }}
+                <div class="mt-2 relative"
+                     data-avatar-id="{{ form.avatar.id_for_label }}"
+                     data-avatar-name="">
+                    <label for="{{ form.avatar.id_for_label }}"
+                           class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center hover:border-neutral-400 transition-colors duration-200">
+                        <svg class="w-8 h-8 text-neutral-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="text-sm font-medium text-neutral-600">Click to upload</span>
+                        <span class="text-xs text-neutral-500 mt-1">PNG, JPG up to 5MB</span>
                     </label>
-                    <div class="mt-2 relative">
-                        <label for="{{ form.avatar.id_for_label }}"
-                            class="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center hover:border-neutral-400 transition-colors duration-200">
-                            <svg class="w-8 h-8 text-neutral-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="text-sm font-medium text-neutral-600">Click to upload</span>
-                            <span class="text-xs text-neutral-500 mt-1">PNG, JPG up to 5MB</span>
-                        </label>
-                        <div>
-                            {{ form.avatar }}
-                        </div>
-                        <div id="file-name" class="text-sm text-neutral-600 mt-2 text-center">No file chosen</div>
+                    <div>
+                        {{ form.avatar }}
                     </div>
+                    <div id="file-name" class="text-sm text-neutral-600 mt-2 text-center">No file chosen</div>
                     {% for error in form.avatar.errors %}
                         <p class="text-sm text-danger-600">{{ error }}</p>
                     {% endfor %}
-                 </div>
+                </div>
 
                 <!-- Password1 -->
                 <div>
@@ -241,25 +239,6 @@
 {% endblock %}
 
 {% block scripts %}
-{{ block.super }}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const fileInput = document.getElementById("{{ form.avatar.id_for_label }}");
-      const fileNameDisplay = document.getElementById('file-name');
-
-      if (fileInput) {
-        fileInput.addEventListener('change', function() {
-          if (this.files && this.files.length > 0) {
-            const fileName = this.files[0].name;
-            fileNameDisplay.textContent = fileName;
-            fileNameDisplay.className = 'text-sm text-neutral-600 font-medium mt-2 text-center';
-          } else {
-            fileNameDisplay.textContent = 'No file chosen';
-            fileNameDisplay.className = 'text-sm text-neutral-600 mt-2 text-center';
-          }
-        });
-      }
-  });
-</script>
-
+    {{ block.super }}
+    <script src="{% static 'js/avatar_display_name.js' %}"></script>
 {% endblock %}
