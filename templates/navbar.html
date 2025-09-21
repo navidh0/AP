@@ -44,6 +44,10 @@
       </a>
 
       <a href="{% url 'booking:doctor_list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+
+
         Booking
       </a>
       {% if user.is_authenticated and user.role == 'patient' %}
@@ -147,6 +151,9 @@
 
 
       <a href="{% url 'booking:doctor_list' %}" 
+     
+
+      <a href="" 
         class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
         <span>Booking</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
