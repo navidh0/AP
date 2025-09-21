@@ -1,0 +1,34 @@
+APPOINTMENT CONFIRMATION
+
+Dear {{ patient.get_full_name|default:patient.username }},
+
+Thank you for booking an appointment with us. Your appointment has been confirmed with the following details:
+
+DOCTOR: {{ doctor.user.get_full_name|default:doctor.user.username }}
+SPECIALTY: {{ doctor.specialty }}
+DATE & TIME: {{ timeslot.start_time|date:"F d, Y" }} at {{ timeslot.start_time|time:"g:i A" }}
+DURATION: {{ timeslot.start_time|timesince:timeslot.end_time }}
+APPOINTMENT FEE: ${{ doctor.fee }}
+STATUS: Confirmed
+
+{% if notes %}
+ADDITIONAL NOTES:
+{{ notes }}
+{% endif %}
+
+IMPORTANT REMINDERS:
+- Please arrive 15 minutes before your scheduled appointment time
+- Bring a valid ID and insurance card (if applicable)
+- If you need to cancel or reschedule, please contact us at least 24 hours in advance
+- In case of emergency, please call our emergency line
+
+If you have any questions or need to make changes to your appointment, please contact us as soon as possible.
+
+We look forward to seeing you soon!
+
+Best regards,
+The Appointment Team
+
+---
+This is an automated confirmation email. Please do not reply to this email.
+© 2024 Appointment System. All rights reserved.

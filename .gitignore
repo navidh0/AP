@@ -1,28 +1,27 @@
-# Python
+# Python specifics
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.env
-*.venv
-*.egg-info/
-*.egg
 
-# Django
-*.sqlite3
+# Django specifics
 db.sqlite3
-media/
-staticfiles/
-*.log
+*.db
+*.sqlite3
+/media/        
+/staticfiles/    
 
-# Virtual environment
+# Virtual environments
+.env          
 venv/
+.venv/
 env/
-ENV/
 
-# IDE / Editor folders
+# Tailwind/Django-Tailwind generated files
+theme/static/css/dist/
+node_modules/
+
+# Editor/IDE files
 .vscode/
 .idea/
+feat/wallet
 *.sublime-project
 *.sublime-workspace
 
@@ -46,3 +45,6 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+*.log
+dev
