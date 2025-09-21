@@ -150,6 +150,16 @@ LOGIN_URL = "users:login"
 LOGOUT_REDIRECT_URL = "home"
 
 # --------------------------
-# Gmail settings
+# Email settings
 # --------------------------
+# For development, using console backend to test email templates
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# For production, use SMTP backend:
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+# EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+# DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@appointment.com")

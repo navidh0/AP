@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .appointment-details {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+        }
+        .highlight {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Appointment Confirmation</h1>
+        <p>Your appointment has been successfully booked!</p>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ patient.get_full_name|default:patient.username }},</p>
+        
+        <p>Thank you for booking an appointment with us. Your appointment has been confirmed with the following details:</p>
+        
+        <div class="appointment-details">
+            <div class="detail-row">
+                <span class="detail-label">Doctor:</span>
+                <span class="detail-value">{{ doctor.user.get_full_name|default:doctor.user.username }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Specialty:</span>
+                <span class="detail-value">{{ doctor.specialty }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date & Time:</span>
+                <span class="detail-value highlight">{{ timeslot.start_time|date:"F d, Y" }} at {{ timeslot.start_time|time:"g:i A" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Duration:</span>
+                <span class="detail-value">{{ timeslot.start_time|timesince:timeslot.end_time }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Appointment Fee:</span>
+                <span class="detail-value highlight">${{ doctor.fee }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" style="color: #4CAF50; font-weight: bold;">Confirmed</span>
+            </div>
+        </div>
+        
+        {% if notes %}
+        <div style="background-color: white; padding: 15px; margin: 20px 0; border-radius: 5px;">
+            <h3>Additional Notes:</h3>
+            <p>{{ notes }}</p>
+        </div>
+        {% endif %}
+        
+        <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0; border-radius: 5px;">
+            <h3 style="margin-top: 0; color: #856404;">Important Reminders:</h3>
+            <ul style="color: #856404;">
+                <li>Please arrive 15 minutes before your scheduled appointment time</li>
+                <li>Bring a valid ID and insurance card (if applicable)</li>
+                <li>If you need to cancel or reschedule, please contact us at least 24 hours in advance</li>
+                <li>In case of emergency, please call our emergency line</li>
+            </ul>
+        </div>
+        
+        <p>If you have any questions or need to make changes to your appointment, please contact us as soon as possible.</p>
+        
+        <p>We look forward to seeing you soon!</p>
+        
+        <p>Best regards,<br>
+        The Appointment Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated confirmation email. Please do not reply to this email.</p>
+        <p>© 2024 Appointment System. All rights reserved.</p>
+    </div>
+</body>
+</html>

@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .models import Appointment
+from .services import send_appointment_confirmation_email_safe
 from doctor.models import Doctor, Timeslot
 
 
@@ -144,12 +145,24 @@ class AppointmentCreateView(LoginRequiredMixin, CreateView):
         form.instance.doctor = doctor
         form.instance.timeslot = timeslot
         
-        messages.success(
-            self.request, 
-            f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}'
-        )
+        # Save the appointment first
+        response = super().form_valid(form)
         
-        return super().form_valid(form)
+        # Send confirmation email after successful booking
+        email_sent = send_appointment_confirmation_email_safe(form.instance)
+        
+        if email_sent:
+            messages.success(
+                self.request, 
+                f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}. A confirmation email has been sent to your email address.'
+            )
+        else:
+            messages.success(
+                self.request, 
+                f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}. Note: Confirmation email could not be sent.'
+            )
+        
+        return response
 
 
 class AppointmentSuccessView(LoginRequiredMixin, ListView):
@@ -207,10 +220,19 @@ def book_appointment_ajax(request):
             notes=data.get('notes', '')
         )
         
+        # Send confirmation email after successful booking
+        email_sent = send_appointment_confirmation_email_safe(appointment)
+        
+        if email_sent:
+            message = f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}. A confirmation email has been sent to your email address.'
+        else:
+            message = f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}. Note: Confirmation email could not be sent.'
+        
         return JsonResponse({
             'success': True,
-            'message': f'Appointment booked successfully for {timeslot.start_time.strftime("%B %d, %Y at %I:%M %p")}',
-            'appointment_id': appointment.id
+            'message': message,
+            'appointment_id': appointment.id,
+            'email_sent': email_sent
         })
         
     except json.JSONDecodeError:

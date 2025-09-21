@@ -14,7 +14,4 @@ urlpatterns = [
     # AJAX endpoints
     path('api/book/', views.book_appointment_ajax, name='book_appointment_ajax'),
 ]
-urlpatterns = [
-
-]
 
