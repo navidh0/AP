@@ -101,8 +101,6 @@ class Timeslot(models.Model):
         return self.start_time > timezone.now()
 
 from users.models import User
-from django.db.models import Q
-
 # -----------------------------
 # Doctor QuerySet & Manager
 # -----------------------------
@@ -141,7 +139,7 @@ class DoctorManager(models.Manager):
 # -----------------------------
 class Doctor(models.Model):
     user = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="doctor_profile",
         limit_choices_to={"role": "doctor"},  # only link Users with role=doctor
