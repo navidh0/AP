@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Verify Phone - MediCare{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 flex items-center justify-center">
+  <div class="max-w-md w-full space-y-8">
+
+    <!-- Header -->
+    <div class="text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900">
+        Verify Your Phone
+      </h2>
+      <p class="mt-2 text-sm text-neutral-600">
+        Enter the one-time password (OTP) we sent to your phone.
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-surface rounded-2xl shadow-md p-8">
+      {% if error %}
+        <div class="mb-4 p-3 rounded-md bg-danger-50 text-danger-600 text-sm text-center">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- OTP Field -->
+        <div>
+          <label for="{{ form.otp_code.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-1">
+            {{ form.otp_code.label }}
+          </label>
+          {{ form.otp_code }}
+          {% for e in form.otp_code.errors %}
+            <p class="text-sm text-danger-600 mt-1">{{ e }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="{% url 'users:retry_otp_login' %}"
+             class="w-full flex justify-center py-3 px-4 border border-neutral-300 text-neutral-700 
+                    rounded-xl text-sm font-medium hover:bg-neutral-50 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+            Change Phone Number
+          </a>
+          <button type="submit"
+                  class="w-full flex justify-center py-3 px-4 border border-transparent 
+                         rounded-xl text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+            Verify & Login
+          </button>
+        </div>
+
+        <!-- Resend OTP -->
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-2 text-sm text-neutral-600 mt-6">
+          <p>Haven’t received the OTP?</p>
+          <a id="resend-btn"
+             type="button"
+             href="{% url 'users:resend_otp' %}"
+             disabled
+             data-final-text="Resend OTP"
+             class="px-3 py-1 rounded-xl bg-gray-400 text-white font-medium cursor-not-allowed 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+            Resend OTP (<span id="countdown">30</span>s)
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/countdown.js' %}"></script>
+{% endblock %}
