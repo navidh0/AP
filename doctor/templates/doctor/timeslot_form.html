@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="bg-white rounded-lg shadow p-6 max-w-lg mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Add a New Timeslot</h1>
+        <p class="mb-4">Note: Make sure your `start_time` and `end_time` fields in the admin or model definition are configured to accept a datetime format like `YYYY-MM-DD HH:MM`.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">
+                Save Timeslot
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

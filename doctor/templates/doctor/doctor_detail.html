@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h1 class="text-3xl font-bold">{{ doctor }}</h1>
+        <p class="text-gray-700 mt-2"><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+        <p class="text-gray-700"><strong>Fee:</strong> ${{ doctor.fee }}</p>
+        <p class="text-gray-700"><strong>Average Rating:</strong> {{ doctor.average_rating }} / 5.0</p>
+        <p class="text-gray-700"><strong>Availability:</strong> {% if doctor.availability %}Available{% else %}Not Available{% endif %}</p>
+
+        <hr class="my-6">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Available Timeslots</h2>
+            <a href="{% url 'doctor:timeslot-add' doctor.pk %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                BOOK AN APPOINTMENT
+            </a>
+        </div>
+        <ul>
+<!--                <strong>({% if timeslot.is_booked %}Booked{% else %}Available{% endif %})</strong>-->
+            {% for timeslot in doctor.timeslots.all %}
+            <li class="p-2 border-b {% if timeslot.is_booked %}bg-red-100{% endif %}">
+                {{ timeslot.start_time|date:"F j, Y, g:i A" }}
+            <li class="p-2 border-b {% if timeslot.is_booked %}bg-red-100{% endif %}">
+                {{ timeslot.end_time|date:"F j, Y, g:i A" }}
+            </li>
+            {% empty %}
+            <li>No timeslots scheduled.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
