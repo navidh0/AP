@@ -1,11 +1,13 @@
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
-
 from django.utils import timezone
 from datetime import timedelta
-
-from .models import Doctor, Timeslot, User
+from .models import Doctor, Timeslot, User, Comment
+from .forms  import CommentForm
+from django.db.models  import Avg
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 class DoctorListView(ListView):
@@ -72,6 +74,30 @@ class DoctorDetailView(DetailView):
     template_name = 'doctor/doctor_detail.html'
     context_object_name = 'doctor'
 
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        doctor = self.get_object()
+
+        #get all comment for this doctor 
+        comments = Comment.objects.filter(doctor=doctor).order_by('-created_at')
+
+        #check the current user already commented
+        user_has_commented = False
+        if self.request.user.is_authenticated:
+            user_has_commented = Comment.objects.filter(
+                doctor=doctor,
+                user = self.request.user
+            ).exists()
+        
+        context.update({
+            'comments': comments,
+            'comment_form': CommentForm(),
+            'user_has_commented': user_has_commented,
+            'total_comments': comments.count(),
+        })
+
+        return context
+
 
 class DoctorCreateView(CreateView):
     """View to add a new doctor via a form."""
@@ -102,4 +128,50 @@ class TimeslotCreateView(CreateView):
 
     def get_success_url(self):
         # Redirect to the doctor's detail page after adding a timeslot
+        return reverse_lazy('doctor:doctor-detail', kwargs={'pk': self.kwargs['doctor_id']})
+
+
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    """ view to create a new comment for the doctor  """
+    model = Comment
+    form_class = CommentForm
+    template_name = 'doctor/comment_form.html'
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        doctor = get_object_or_404(Doctor, pk=self.kwargs['doctor_id'])
+        context['doctor'] = doctor
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        # check if user is a patient 
+        if not request.user.is_authenticated or request.user.role != 'patient' :
+            messages.error(request, 'Only patients can leave reviews.')
+            return redirect('doctor:doctor-detail', pk=self.kwargs['doctor_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def form_valid(self, form):
+        doctor = get_object_or_404(Doctor, pk=self.kwargs['doctor_id'])
+
+        #check the user already has comment on this doctor 
+        existing_comment = Comment.objects.filter(
+            doctor=doctor,
+            user=self.request.user
+        ).first()
+
+        if existing_comment:
+            messages.error(self.request, 'You have already reviewed this doctor.')
+            return redirect('doctor:doctor-detail', pk=doctor.pk)
+        form.instance.doctor = doctor
+        form.instance.user = self.request.user
+
+        messages.success(self.request, 'Your review has been submitted successfully.')
+        return super().form_valid(form)
+
+
+
+    def get_success_url(self):
         return reverse_lazy('doctor:doctor-detail', kwargs={'pk': self.kwargs['doctor_id']})
