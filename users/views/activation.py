@@ -2,6 +2,8 @@ from django.views import View
 from django.shortcuts import render
 from django.core import signing
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage
+from django.core.files.base import File
 
 User = get_user_model()
 
@@ -31,7 +33,10 @@ class ActivateView(View):
                 "show_resend": True,
             })
 
-        # ✅ Create and save the user only after successful activation
+        # ✅ Extract avatar path directly from token data
+        file_path = user_data.pop("avatar_path", None)
+
+        # ✅ Create and save the user
         user = User.objects.create_user(
             username=user_data["username"],
             email=user_data["email"],
@@ -46,9 +51,21 @@ class ActivateView(View):
             is_email_verified=True,
         )
         user.set_password(user_data["password1"])  # hash password
+
+        # ✅ Handle avatar safely with a context manager
+        if file_path and default_storage.exists(file_path):
+            with default_storage.open(file_path, "rb") as f:
+                user.avatar.save(
+                    file_path.split("/")[-1],  # filename
+                    File(f),
+                    save=True
+                )
+            # Delete after file is closed → no Windows lock issue
+            default_storage.delete(file_path)
+
         user.save()
 
-        # Clear pending data from session after successful activation
+        # ✅ Session cleanup (if any retry data exists)
         request.session.pop("pending_user_data", None)
 
         return render(request, "users/activation_success.html")

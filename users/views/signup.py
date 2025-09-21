@@ -2,9 +2,28 @@ from django.views.generic import FormView
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.core import signing
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import UploadedFile
 
 from users.forms import UserSignUpForm
 from users.utils import send_activation_email
+
+
+def _sanitize_user_data(cleaned_data):
+    """
+    Store only serializable fields in user_data.
+    If there's a file, save it using Django storage and
+    store only the file path.
+    """
+    safe_data = {}
+    for key, value in cleaned_data.items():
+        if isinstance(value, UploadedFile):
+            # Save file into MEDIA_ROOT/pending/
+            file_path = default_storage.save(f"pending/{value.name}", value)
+            safe_data[f"{key}_path"] = file_path
+        else:
+            safe_data[key] = value
+    return safe_data
 
 
 class UserSignUpView(FormView):
@@ -12,9 +31,9 @@ class UserSignUpView(FormView):
     form_class = UserSignUpForm
 
     def form_valid(self, form):
-        user_data = form.cleaned_data
+        user_data = _sanitize_user_data(form.cleaned_data)
 
-        # Save user_data in session
+        # Save user_data in session (JSON-safe)
         self.request.session["pending_user_data"] = user_data
 
         # Create signed token (5 min expiry)
@@ -38,7 +57,7 @@ class RetrySignUpView(FormView):
         return self.request.session.get("pending_user_data", {})
 
     def form_valid(self, form):
-        user_data = form.cleaned_data
+        user_data = _sanitize_user_data(form.cleaned_data)
 
         # Update session with new/edited data
         self.request.session["pending_user_data"] = user_data
