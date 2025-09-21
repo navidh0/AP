@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ doctor.user.get_full_name }} - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{% url 'booking:doctor_list' %}" 
+           class="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to Doctors
+        </a>
+    </div>
+
+    <!-- Doctor Profile Section -->
+    <div class="bg-surface rounded-2xl shadow-md p-8 mb-8">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
+            <!-- Doctor Image -->
+            <div class="flex-shrink-0">
+                <img 
+                    src="{{ doctor.user.get_avatar_url }}" 
+                    alt="{{ doctor.user.get_full_name }}"
+                    class="w-32 h-32 rounded-full object-cover border-4 border-primary-200"
+                >
+            </div>
+            
+            <!-- Doctor Info -->
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold text-neutral-900 mb-2">
+                    Dr. {{ doctor.user.get_full_name }}
+                </h1>
+                <p class="text-xl text-primary-600 font-semibold mb-4">{{ doctor.specialty }}</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Fee -->
+                    <div class="flex items-center">
+                        <div class="bg-primary-100 p-3 rounded-lg mr-4">
+                            <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-neutral-500">Consultation Fee</p>
+                            <p class="text-lg font-semibold text-neutral-900">${{ doctor.fee }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating -->
+                    <div class="flex items-center">
+                        <div class="bg-warning-100 p-3 rounded-lg mr-4">
+                            <svg class="w-6 h-6 text-warning-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-neutral-500">Average Rating</p>
+                            <p class="text-lg font-semibold text-neutral-900">{{ doctor.average_rating|floatformat:1 }}/5.0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="flex items-center">
+                        <div class="bg-success-100 p-3 rounded-lg mr-4">
+                            <svg class="w-6 h-6 text-success-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-neutral-500">Status</p>
+                            <p class="text-lg font-semibold text-success-600">
+                                {% if doctor.availability %}Available{% else %}Unavailable{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Time Slots Section -->
+    <div class="bg-surface rounded-2xl shadow-md p-8">
+        <h2 class="text-2xl font-bold text-neutral-900 mb-6">Available Time Slots</h2>
+        
+        {% if has_available_slots %}
+            <div class="mb-6">
+                <p class="text-neutral-600">
+                    Select a time slot to book your appointment. Available slots are shown for the next 30 days.
+                </p>
+            </div>
+            
+            <!-- Time Slots Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {% for slot in available_slots %}
+                    <div class="border border-neutral-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all duration-200">
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-neutral-900 mb-1">
+                                {{ slot.start_time|date:"M d" }}
+                            </div>
+                            <div class="text-sm text-neutral-600 mb-3">
+                                {{ slot.start_time|date:"l" }}
+                            </div>
+                            <div class="text-xl font-bold text-primary-600 mb-4">
+                                {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                            </div>
+                            
+                            {% if user.is_authenticated and user.role == 'patient' %}
+                                <a href="{% url 'booking:appointment_create' doctor.pk slot.pk %}" 
+                                   class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm block">
+                                    Book This Slot
+                                </a>
+                            {% elif user.is_authenticated and user.role != 'patient' %}
+                                <button disabled 
+                                        class="w-full bg-neutral-300 text-neutral-500 py-2 px-4 rounded-lg font-medium text-sm cursor-not-allowed">
+                                    Only for Patients
+                                </button>
+                            {% else %}
+                                <a href="{% url 'users:login' %}?next={% url 'booking:doctor_detail' doctor.pk %}" 
+                                   class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm block">
+                                    Login to Book
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Load More Button (if needed) -->
+            {% if available_slots|length >= 20 %}
+                <div class="text-center mt-8">
+                    <button class="px-6 py-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                        Load More Slots
+                    </button>
+                </div>
+            {% endif %}
+            
+        {% else %}
+            <!-- No Available Slots -->
+            <div class="text-center py-12">
+                <div class="bg-neutral-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-neutral-900 mb-2">No Available Slots</h3>
+                <p class="text-neutral-600 mb-6">
+                    Dr. {{ doctor.user.get_full_name }} doesn't have any available time slots at the moment.
+                </p>
+                <div class="space-y-2">
+                    <p class="text-sm text-neutral-500">You can:</p>
+                    <ul class="text-sm text-neutral-500 space-y-1">
+                        <li>• Check back later for new slots</li>
+                        <li>• Contact the clinic directly</li>
+                        <li>• Browse other available doctors</li>
+                    </ul>
+                </div>
+                <div class="mt-6">
+                    <a href="{% url 'booking:doctor_list' %}" 
+                       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        Browse Other Doctors
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -20,7 +20,6 @@ from .views import (
     UserPasswordChangeDoneView
 )
 
-app_name = "users"
 
 urlpatterns = [
     # --- Sign up / Activation ---
@@ -55,4 +54,5 @@ urlpatterns = [
     path("password-reset/done/", UserPasswordResetDoneView.as_view(), name="password_reset_done"),
     path("reset/<uidb64>/<token>/", UserPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("reset/done/", UserPasswordResetCompleteView.as_view(), name="password_reset_complete"),
+
 ]
