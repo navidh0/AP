@@ -72,6 +72,16 @@
                                     {{ appointment.get_status_display }}
                                 </span>
                                 
+                                {% if appointment.status == 'scheduled' %}
+                                    <button 
+                                        onclick="payAppointment({{ appointment.id }}, {{ appointment.doctor.fee }})"
+                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                                    >
+                                        Pay ${{ appointment.doctor.fee }} from Wallet
+                                    </button>
+                                    <div id="paymentMessage{{ appointment.id }}" class="text-xs"></div>
+                                {% endif %}
+                                
                                 {% if appointment.notes %}
                                     <div class="text-sm text-neutral-600 text-center lg:text-right">
                                         <span class="font-medium">Notes:</span> {{ appointment.notes|truncatechars:50 }}
@@ -199,10 +209,53 @@
            class="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors font-medium text-center">
             Book New Appointment
         </a>
+        <a href="{% url 'wallet:wallet_detail' %}" 
+           class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-center">
+            My Wallet
+        </a>
         <a href="/" 
            class="flex-1 border border-neutral-300 text-neutral-700 py-3 px-6 rounded-lg hover:bg-neutral-50 transition-colors font-medium text-center">
             Back to Home
         </a>
     </div>
 </div>
+
+<script>
+function payAppointment(appointmentId, amount) {
+    const messageDiv = document.getElementById('paymentMessage' + appointmentId);
+    
+    if (!confirm(`Are you sure you want to pay $${amount} for this appointment from your wallet?`)) {
+        return;
+    }
+    
+    messageDiv.innerHTML = '<div class="text-blue-600 text-xs">Processing payment...</div>';
+    
+    fetch('{% url "wallet:pay_appointment_ajax" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            appointment_id: appointmentId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageDiv.innerHTML = '<div class="text-green-600 text-xs">' + data.message + '</div>';
+            // Reload page after 2 seconds to show updated status
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            messageDiv.innerHTML = '<div class="text-red-600 text-xs">' + data.error + '</div>';
+        }
+    })
+    .catch(error => {
+        messageDiv.innerHTML = '<div class="text-red-600 text-xs">An error occurred. Please try again.</div>';
+        console.error('Error:', error);
+    });
+}
+</script>
 {% endblock %}
