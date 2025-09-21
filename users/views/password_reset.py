@@ -8,10 +8,10 @@ from users.forms import UserPasswordResetForm, UserSetPasswordForm
 
 
 class UserPasswordResetView(PasswordResetView):
-    template_name = "users/password_reset.html"
+    template_name = "users/password_reset.html"         
     form_class = UserPasswordResetForm
-    email_template_name = "users/password_reset_email.html"
-    subject_template_name = "users/password_reset_subject.txt"
+    subject_template_name = "users/emails/password_reset_subject.txt" 
+    email_template_name = "users/emails/password_reset_email.txt"     
     success_url = reverse_lazy("users:password_reset_done")
 
 

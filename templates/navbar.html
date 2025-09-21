@@ -78,6 +78,11 @@
           Login
         </a>
 
+        <a href="{% url 'users:otp_login' %}"
+          class="px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          OTP-Login
+        </a>
+
         <!-- Sign Up -->
         <a href="{% url 'users:signup' %}"
           class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">
@@ -183,6 +188,15 @@
           <a href="{% url 'users:login' %}" 
             class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
             <span>Login</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+          </a>
+
+          <a href="{% url 'users:otp_login' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>OTP-Login</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
