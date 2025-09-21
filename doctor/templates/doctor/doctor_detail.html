@@ -31,4 +31,59 @@
         </ul>
     </div>
 </div>
+
+<!-- ADD THIS COMMENTS SECTION -->
+<div class="bg-white rounded-lg shadow p-6 mt-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold">Patient Reviews ({{ total_comments }})</h2>
+        {% if user.is_authenticated and user.role == 'patient' and not user_has_commented %}
+            <a href="{% url 'doctor:comment-add' doctor.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Write a Review
+            </a>
+        {% elif user_has_commented %}
+            <span class="text-gray-500">You have already reviewed this doctor</span>
+        {% elif not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Login to Review
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Comments List -->
+    {% if comments %}
+        {% for comment in comments %}
+        <div class="border-b border-gray-200 py-4">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h4 class="font-semibold text-lg">
+                        {% if comment.is_anonymous %}
+                            Anonymous Patient
+                        {% else %}
+                            {{ comment.user.get_full_name|default:comment.user.username }}
+                        {% endif %}
+                    </h4>
+                    <p class="text-sm text-gray-500">{{ comment.created_at|date:"F j, Y" }}</p>
+                </div>
+                <!-- Star Rating Display -->
+                <div class="flex items-center">
+                    {% for i in "12345" %}
+                        {% if i|add:0 <= comment.doctor_rating %}
+                            <span class="text-yellow-400 text-lg">★</span>
+                        {% else %}
+                            <span class="text-gray-300 text-lg">★</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <h5 class="font-medium text-gray-800 mb-2">{{ comment.title }}</h5>
+            <p class="text-gray-700">{{ comment.description }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-gray-500 text-center py-8">No reviews yet. Be the first to review this doctor!</p>
+    {% endif %}
+</div>
+<!-- END OF COMMENTS SECTION -->
+</div>
 {% endblock %}
