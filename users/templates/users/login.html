@@ -4,25 +4,25 @@
 {% block title %}Login - MediCare{% endblock %}
 
 {% block content %}
-<div class="bg-gradient-to-br from-primary-50 to-secondary-50 py-8 px-4 flex items-center justify-center">
+<div class="bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 flex items-center justify-center">
   <div class="max-w-md w-full space-y-8">
 
     <!-- Header -->
     <div class="text-center">
-      <h2 class="mt-6 text-2xl sm:text-3xl font-bold text-neutral-900">
+      <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900">
         Sign in to your account
       </h2>
       <p class="mt-2 text-sm text-neutral-600">
-        Welcome back to MediCare
+        Welcome back to MediCare. Please enter your credentials to continue.
       </p>
     </div>
 
     <!-- Form Container -->
     <div class="bg-surface rounded-2xl shadow-md p-8">
-      <form method="post" class="space-y-4">
+      <form method="post" class="space-y-6">
         {% csrf_token %}
 
-        <!-- Non-field errors (e.g. invalid login) -->
+        <!-- Non-field errors -->
         {% if form.non_field_errors %}
           <div class="p-3 rounded-md bg-danger-50 text-danger-600 text-sm">
             {% for error in form.non_field_errors %}
@@ -45,22 +45,41 @@
             {{ form.password.label }}
           </label>
           {{ form.password }}
+
+          <!-- Forgot password -->
+          <div class="text-center mt-2">
+            <a href="{% url 'users:password_reset' %}" 
+               class="text-sm font-medium text-primary-600 hover:text-primary-500">
+              Forgot your password?
+            </a>
+          </div>
         </div>
 
-        <!-- Submit -->
+        <!-- Primary Login -->
         <button type="submit"
                 class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl 
-                        text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                       text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
           Login
         </button>
-        
-        <!-- Forget password -->
-        <div class="flex justify-center">
-          <a href="{% url 'users:password_reset' %}" class="text-sm font-medium text-primary-600 hover:text-primary-500">
-            Forgot your password?
-          </a>
+
+        <!-- Divider -->
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-neutral-200"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-surface text-neutral-500">Or continue with</span>
+          </div>
         </div>
+
+        <!-- Phone Login -->
+        <a href="{% url 'users:otp_login' %}"
+           class="w-full flex justify-center py-3 px-4 border border-neutral-300 text-neutral-700 
+                  rounded-xl text-sm font-medium hover:bg-neutral-50 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+          Login with Phone Number
+        </a>
 
         <!-- Sign Up Redirect -->
         <div class="text-center">
