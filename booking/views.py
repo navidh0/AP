@@ -180,6 +180,59 @@ class AppointmentSuccessView(LoginRequiredMixin, ListView):
         ).select_related('doctor', 'timeslot').order_by('timeslot__start_time')
 
 
+class PatientAppointmentListView(LoginRequiredMixin, ListView):
+    """View to display patient's appointment history (past and future)"""
+    model = Appointment
+    template_name = 'booking/patient_appointment_list.html'
+    context_object_name = 'appointments'
+    paginate_by = 10
+    
+    def dispatch(self, request, *args, **kwargs):
+        """Check if user is a patient"""
+        if not request.user.is_authenticated:
+            messages.error(request, 'You must be logged in to view appointments.')
+            return redirect('users:login')
+        
+        if request.user.role != 'patient':
+            messages.error(request, 'Only patients can view appointment history.')
+            return redirect('booking:doctor_list')
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        """Get user's appointments divided into past and future"""
+        now = timezone.now()
+        
+        # Get all appointments for the patient
+        appointments = Appointment.objects.filter(
+            patient=self.request.user
+        ).select_related('doctor__user', 'timeslot').order_by('-timeslot__start_time')
+        
+        return appointments
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = timezone.now()
+        
+        # Separate appointments into past and future
+        all_appointments = self.get_queryset()
+        
+        future_appointments = all_appointments.filter(
+            timeslot__start_time__gte=now
+        ).order_by('timeslot__start_time')
+        
+        past_appointments = all_appointments.filter(
+            timeslot__start_time__lt=now
+        ).order_by('-timeslot__start_time')
+        
+        context['future_appointments'] = future_appointments
+        context['past_appointments'] = past_appointments
+        context['has_future_appointments'] = future_appointments.exists()
+        context['has_past_appointments'] = past_appointments.exists()
+        
+        return context
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @require_http_methods(["POST"])
 def book_appointment_ajax(request):
