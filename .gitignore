@@ -21,4 +21,30 @@ node_modules/
 # Editor/IDE files
 .vscode/
 .idea/
+feat/wallet
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pytest / coverage
+htmlcov/
+.coverage
+pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Pipenv / Poetry
+Pipfile.lock
+poetry.lock
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 *.log
+dev
