@@ -36,54 +36,68 @@
       <a href="/" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
         Home
       </a>
-      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+      <a href="{% url 'doctor:doctor-list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
         Doctors
       </a>
 
-      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+      <a href="{% url 'booking:doctor_list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
         Booking
-      </a>
-      <a href="" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
-        Search
       </a>
     </div>
 
     <!-- Desktop Auth Buttons -->
-    <div class="hidden lg:flex items-center justify-between gap-x-4">
+    <div class="hidden lg:flex items-center gap-x-4 ml-auto">
       {% if user.is_authenticated %}
-
-        <!-- Logout -->
-        <form method="post" action="{% url 'users:logout' %}">
-          {% csrf_token %}
-          <button type="submit"
-            class="px-2 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
-            Logout
+        <!-- Avatar Dropdown -->
+        <div class="relative group">
+          <button type="button" 
+                  class="flex items-center focus:outline-none">
+            <img src="{{ user.get_avatar_url }}" alt="{{ user.username }}" 
+                class="w-10 h-10 rounded-full object-cover border border-neutral-200">
+            <svg class="w-4 h-4 ml-2 text-neutral-500 group-hover:text-primary-600 transition-colors" 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
           </button>
-        </form>
 
-        <!-- Update Profile -->
-        <a href="{% url 'users:profile' %}"
-          class="px-2 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
-          Update Profile
-        </a>
-
-        <!-- Change Password -->
-        <a href="{% url 'users:password_change' %}"
-          class="px-2 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
-          Change Password
-        </a>
-
-        <img src="{{ user.get_avatar_url }}" alt="{{ user.username }}" 
-                   class="w-10 h-10 rounded-full object-cover border border-neutral-200">
-
+          <!-- Dropdown -->
+          <div class="absolute right-0 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 hidden group-hover:block">
+            <div class="py-2">
+              <a href="{% url 'users:profile' %}" 
+                class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                Update Profile
+              </a>
+              <a href="{% url 'users:password_change' %}" 
+                class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                Change Password
+              </a>
+              {% if user.role == 'patient' %}
+                <a href="{% url 'booking:patient_appointment_list' %}" 
+                  class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                  My Appointments
+                </a>
+                <a href="{% url 'wallet:wallet_detail' %}" 
+                  class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                  My Wallet
+                </a>
+              {% endif %}
+              <div class="border-t border-neutral-200 my-1"></div>
+              <form method="post" action="{% url 'users:logout' %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">
+                  Logout
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
       {% else %}
-        <!-- Login -->
+        <!-- Login / Signup -->
         <a href="{% url 'users:login' %}"
           class="px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
           Login
         </a>
-
-        <!-- Sign Up -->
         <a href="{% url 'users:signup' %}"
           class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors">
           Sign Up
@@ -114,11 +128,12 @@
     </div>
 
     <div class="px-4 pt-6 pb-3 space-y-2 flex flex-col">
-      
-      <div class="flex justify-center border-b border-neutral-200">
-        <img src="{{ user.get_avatar_url }}" alt="{{ user.username }}"
-                    class="w-25 h-25 rounded-full object-cover border border-neutral-200 mb-2">
-      </div>
+      {% if user.is_authenticated %}
+        <div class="flex justify-center border-b border-neutral-200">
+          <img src="{{ user.get_avatar_url }}" alt="{{ user.username }}"
+                      class="w-25 h-25 rounded-full object-cover border border-neutral-200 mb-2">
+        </div>
+      {% endif %}
 
       <a href="/" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
         <span>Home</span>
@@ -126,47 +141,42 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
       </a>
-      <a href="" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+      <a href="{% url 'doctor:doctor-list' %}" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
         <span>Doctors</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 15 15"">
           <path d="M5.5 7C4.12 7 3 5.88 3 4.5v-2C3 2.22 3.22 2 3.5 2H4c.28 0 .5-.22.5-.5S4.28 1 4 1H3.5C2.67 1 2 1.67 2 2.5v2c0 1.15.57 2.22 1.51 2.87.9.8 1.44 1.93 1.49 3.13 0 1.93 1.57 3.5 3.5 3.5s3.5-1.57 3.5-3.5V9.93c1.07-.28 1.71-1.37 1.44-2.44-.28-1.07-1.37-1.71-2.44-1.44-1.07.28-1.71 1.37-1.44 2.44.18.7.73 1.25 1.44 1.44v.57c0 1.38-1.12 2.5-2.5 2.5S6 11.88 6 10.5c.05-1.2.59-2.34 1.5-3.13C8.44 6.72 9 5.64 9 4.5v-2C9 1.67 8.33 1 7.5 1H7c-.28 0-.5.22-.5.5S6.72 2 7 2h.5c.28 0 .5.22.5.5v2c0 1.38-1.12 2.5-2.5 2.5zM11.5 9c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
         </svg>
       </a>
 
-      <a href="" 
+      <a href="{% url 'booking:doctor_list' %}" 
         class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
         <span>Booking</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
         </svg>
       </a>
-      {% if user.is_authenticated and user.role == 'patient' %}
-        <a href="{% url 'booking:patient_appointment_list' %}" 
-          class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
-          <span>My Appointments</span>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-        </a>
-        <a href="{% url 'wallet:wallet_detail' %}" 
-          class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
-          <span>My Wallet</span>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-          </svg>
-        </a>
-      {% endif %}
 
-      <a href="" class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
-        <span>Search</span>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </a>
     </div>
 
     <div class="pt-4 pb-3 border-t border-neutral-200">
       <div class="px-4 space-y-2 flex flex-col items-end">
+
+        {% if user.is_authenticated and user.role == 'patient' %}
+          <a href="{% url 'booking:patient_appointment_list' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>My Appointments</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </a>
+          <a href="{% url 'wallet:wallet_detail' %}" 
+            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+            <span>My Wallet</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </a>
+        {% endif %}
 
         {% if user.is_authenticated %}
           <!-- Update Profile -->
