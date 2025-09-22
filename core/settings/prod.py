@@ -1,27 +1,26 @@
 from .base import *
+import os
 
 DEBUG = False
 
-# Allow only your domain/servers
-ALLOWED_HOSTS = ["yourdomain.com", "www.yourdomain.com"]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
-# Example: PostgreSQL for production
+# SQLite database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST", default="localhost"),
-        'PORT': env("DB_PORT", default="5432"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",
     }
 }
 
-# Static files for production
+# Static/media paths (match docker volumes)
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = '/static'
 
-# Extra security in production
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/media'
+
+# Extra production security
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
