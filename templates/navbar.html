@@ -43,6 +43,21 @@
       <a href="{% url 'booking:doctor_list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
         Booking
       </a>
+      
+      <!-- Dashboard links based on user role -->
+      {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          Dashboard
+        </a>
+      {% elif user.is_authenticated and user.role == 'doctor' %}
+        <a href="{% url 'doctor:dashboard' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          Dashboard
+        </a>
+      {% elif user.is_authenticated and user.role == 'patient' %}
+        <a href="{% url 'booking:patient_appointment_list' %}" class="px-3 py-2 text-sm font-medium text-neutral-700 hover:text-primary-600 transition-colors">
+          My Appointments
+        </a>
+      {% endif %}
     </div>
 
     <!-- Desktop Auth Buttons -->
@@ -71,16 +86,16 @@
                 class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
                 Change Password
               </a>
-              {% if user.role == 'patient' %}
-                <a href="{% url 'booking:patient_appointment_list' %}" 
-                  class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
-                  My Appointments
-                </a>
-                <a href="{% url 'wallet:wallet_detail' %}" 
-                  class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
-                  My Wallet
-                </a>
-              {% endif %}
+                {% if user.role == 'patient' %}
+                  <a href="{% url 'wallet:wallet_detail' %}"
+                    class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                    My Wallet
+                  </a>
+                  <a href="{% url 'users:notifications' %}"
+                    class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary-600">
+                    Notifications
+                  </a>
+                {% endif %}
               <div class="border-t border-neutral-200 my-1"></div>
               <form method="post" action="{% url 'users:logout' %}">
                 {% csrf_token %}
@@ -156,19 +171,39 @@
         </svg>
       </a>
 
+      <!-- Dashboard links based on user role -->
+      {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'admin_dashboard:dashboard' %}" 
+          class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+          <span>Dashboard</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </a>
+      {% elif user.is_authenticated and user.role == 'doctor' %}
+        <a href="{% url 'doctor:dashboard' %}" 
+          class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+          <span>Dashboard</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </a>
+      {% elif user.is_authenticated and user.role == 'patient' %}
+        <a href="{% url 'booking:patient_appointment_list' %}" 
+          class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
+          <span>My Appointments</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </a>
+      {% endif %}
+
     </div>
 
     <div class="pt-4 pb-3 border-t border-neutral-200">
       <div class="px-4 space-y-2 flex flex-col items-end">
 
         {% if user.is_authenticated and user.role == 'patient' %}
-          <a href="{% url 'booking:patient_appointment_list' %}" 
-            class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
-            <span>My Appointments</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </a>
           <a href="{% url 'wallet:wallet_detail' %}" 
             class="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-neutral-700 hover:text-primary-600 hover:bg-neutral-50 transition-all w-full justify-end">
             <span>My Wallet</span>

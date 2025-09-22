@@ -9,12 +9,15 @@ urlpatterns = [
     
     # Appointment booking
     path('book/<int:doctor_id>/<int:timeslot_id>/', views.AppointmentCreateView.as_view(), name='appointment_create'),
-    path('success/', views.AppointmentSuccessView.as_view(), name='appointment_success'),
+    path('success/<int:appointment_id>/', views.AppointmentSuccessView.as_view(), name='appointment_success'),
     
     # Patient appointment history
     path('my-appointments/', views.PatientAppointmentListView.as_view(), name='patient_appointment_list'),
     
+    # Appointment cancellation
+    path('cancel/<int:appointment_id>/', views.CancelAppointmentView.as_view(), name='cancel_appointment'),
+    
     # AJAX endpoints
-    path('api/book/', views.book_appointment_ajax, name='book_appointment_ajax'),
+    path('api/book/', views.BookAppointmentAjaxView.as_view(), name='book_appointment_ajax'),
 ]
 

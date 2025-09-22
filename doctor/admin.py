@@ -1,11 +1,16 @@
 from django.contrib import admin
-from .models import Doctor, Timeslot, Comment
+from .models import Doctor, Timeslot, Comment, DoctorAvailability
 
 class TimeslotInline(admin.TabularInline):
     model = Timeslot
     extra = 1
     fields = ('start_time', 'end_time', 'is_booked')
     readonly_fields = ('is_booked',)
+
+class DoctorAvailabilityInline(admin.TabularInline):
+    model = DoctorAvailability
+    extra = 1
+    fields = ('day_of_week', 'start_time', 'end_time', 'visit_duration', 'is_active')
 
 
 
@@ -14,13 +19,20 @@ class DoctorAdmin(admin.ModelAdmin):
     list_display = ('user', 'specialty','fee', 'availability', 'average_rating')
     list_filter = ('specialty', 'availability')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialty')
-    inlines = [TimeslotInline]
+    inlines = [DoctorAvailabilityInline, TimeslotInline]
 
+
+@admin.register(DoctorAvailability)
+class DoctorAvailabilityAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'get_day_of_week_display', 'start_time', 'end_time', 'visit_duration', 'is_active')
+    list_filter = ('day_of_week', 'is_active', 'visit_duration')
+    search_fields = ('doctor__user__username', 'doctor__user__first_name', 'doctor__user__last_name')
+    ordering = ('doctor', 'day_of_week', 'start_time')
 
 @admin.register(Timeslot)
 class TimeslotAdmin(admin.ModelAdmin):
-    list_display = ('doctor', 'start_time', 'end_time', 'is_booked')
-    list_filter = ('is_booked',)
+    list_display = ('doctor', 'start_time', 'end_time', 'is_booked', 'created_from_availability')
+    list_filter = ('is_booked', 'created_from_availability')
     search_fields = ('doctor__user__username', 'doctor__user__first_name', 'doctor__user__last_name')
 
 

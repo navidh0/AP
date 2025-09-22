@@ -17,49 +17,113 @@
 
     <!-- Search and Filter Section -->
     <div class="bg-surface rounded-xl shadow-md p-6 mb-8">
-        <form method="get" class="flex flex-col md:flex-row gap-4">
-            <!-- Search Input -->
-            <div class="flex-1">
-                <label for="search" class="block text-sm font-medium text-neutral-700 mb-2">
-                    Search by Doctor Name
-                </label>
-                <input 
-                    type="text" 
-                    id="search" 
-                    name="search" 
-                    value="{{ search_query }}"
-                    placeholder="Enter doctor's name..."
-                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
+        <form method="get" class="space-y-6">
+            <!-- Main Search Row -->
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Input -->
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Search by Doctor Name or Specialty
+                    </label>
+                    <input 
+                        type="text" 
+                        id="search" 
+                        name="search" 
+                        value="{{ search_query }}"
+                        placeholder="Enter doctor's name or specialty..."
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <!-- Specialty Filter -->
+                <div class="md:w-64">
+                    <label for="specialty" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Specialty
+                    </label>
+                    <select 
+                        id="specialty" 
+                        name="specialty" 
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                        <option value="">All Specialties</option>
+                        {% for specialty in specialties %}
+                            <option value="{{ specialty }}" {% if specialty_filter == specialty %}selected{% endif %}>
+                                {{ specialty }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Search Button -->
+                <div class="flex items-end">
+                    <button 
+                        type="submit" 
+                        class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                    >
+                        Search
+                    </button>
+                </div>
             </div>
             
-            <!-- Specialty Filter -->
-            <div class="md:w-64">
-                <label for="specialty" class="block text-sm font-medium text-neutral-700 mb-2">
-                    Specialty
-                </label>
-                <select 
-                    id="specialty" 
-                    name="specialty" 
-                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                    <option value="">All Specialties</option>
-                    {% for specialty in specialties %}
-                        <option value="{{ specialty }}" {% if specialty_filter == specialty %}selected{% endif %}>
-                            {{ specialty }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Search Button -->
-            <div class="flex items-end">
-                <button 
-                    type="submit" 
-                    class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-                >
-                    Search
-                </button>
+            <!-- Advanced Filters Row -->
+            <div class="border-t border-neutral-200 pt-4">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <!-- Fee Range -->
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">
+                            Fee Range
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                type="number" 
+                                name="min_fee" 
+                                value="{{ min_fee }}"
+                                placeholder="Min fee"
+                                min="0"
+                                step="0.01"
+                                class="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            >
+                            <span class="flex items-center text-neutral-500">to</span>
+                            <input 
+                                type="number" 
+                                name="max_fee" 
+                                value="{{ max_fee }}"
+                                placeholder="Max fee"
+                                min="0"
+                                step="0.01"
+                                class="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="md:w-48">
+                        <label for="min_rating" class="block text-sm font-medium text-neutral-700 mb-2">
+                            Minimum Rating
+                        </label>
+                        <select 
+                            id="min_rating" 
+                            name="min_rating" 
+                            class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
+                            <option value="">Any Rating</option>
+                            <option value="4.5" {% if min_rating == "4.5" %}selected{% endif %}>4.5+ Stars</option>
+                            <option value="4.0" {% if min_rating == "4.0" %}selected{% endif %}>4.0+ Stars</option>
+                            <option value="3.5" {% if min_rating == "3.5" %}selected{% endif %}>3.5+ Stars</option>
+                            <option value="3.0" {% if min_rating == "3.0" %}selected{% endif %}>3.0+ Stars</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Clear Filters Button -->
+                    <div class="flex items-end">
+                        <a 
+                            href="{% url 'booking:doctor_list' %}" 
+                            class="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
+                        >
+                            Clear Filters
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -140,7 +204,7 @@
             <div class="mt-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}" 
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if min_fee %}&min_fee={{ min_fee }}{% endif %}{% if max_fee %}&max_fee={{ max_fee }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}" 
                            class="px-3 py-2 text-sm font-medium text-neutral-500 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">
                             Previous
                         </a>
@@ -151,7 +215,7 @@
                     </span>
                     
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}" 
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if min_fee %}&min_fee={{ min_fee }}{% endif %}{% if max_fee %}&max_fee={{ max_fee }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}" 
                            class="px-3 py-2 text-sm font-medium text-neutral-500 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">
                             Next
                         </a>

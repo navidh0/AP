@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.core import signing
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
+from datetime import date, datetime
 
 from users.forms import UserSignUpForm
 from users.utils import send_activation_email
@@ -14,6 +15,7 @@ def _sanitize_user_data(cleaned_data):
     Store only serializable fields in user_data.
     If there's a file, save it using Django storage and
     store only the file path.
+    Convert date objects to ISO format strings for JSON serialization.
     """
     safe_data = {}
     for key, value in cleaned_data.items():
@@ -21,6 +23,9 @@ def _sanitize_user_data(cleaned_data):
             # Save file into MEDIA_ROOT/pending/
             file_path = default_storage.save(f"pending/{value.name}", value)
             safe_data[f"{key}_path"] = file_path
+        elif isinstance(value, (date, datetime)):
+            # Convert date/datetime objects to ISO format strings
+            safe_data[key] = value.isoformat()
         else:
             safe_data[key] = value
     return safe_data

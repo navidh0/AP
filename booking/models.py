@@ -67,3 +67,12 @@ class Appointment(models.Model):
     def is_future(self):
         """Check if appointment is in the future"""
         return self.timeslot.start_time > timezone.now()
+    
+    def can_be_cancelled(self):
+        """Check if appointment can be cancelled (more than 24 hours away)"""
+        if self.status in ['cancelled', 'completed']:
+            return False
+        
+        # Check if appointment is more than 24 hours away
+        time_until_appointment = self.timeslot.start_time - timezone.now()
+        return time_until_appointment.total_seconds() > 24 * 3600  # 24 hours in seconds

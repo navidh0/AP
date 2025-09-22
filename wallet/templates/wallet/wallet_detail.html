@@ -22,25 +22,48 @@
 
         <!-- Add Funds Section -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Add Funds</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Request Funds</h2>
             <div class="flex items-center space-x-4">
                 <input 
                     type="number" 
                     id="fundAmount" 
-                    placeholder="Enter amount" 
+                    placeholder="Enter amount (max $1000)" 
                     min="0.01" 
+                    max="1000"
                     step="0.01"
                     class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                 <button 
-                    onclick="addFunds()" 
+                    onclick="requestFunds()" 
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                    Add Funds
+                    Request Funds
                 </button>
             </div>
             <div id="fundMessage" class="mt-2"></div>
+            <p class="text-sm text-gray-500 mt-2">Funds requests require admin approval before being added to your wallet.</p>
         </div>
+
+        <!-- Pending Funding Requests -->
+        {% if pending_requests %}
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Pending Funding Requests</h2>
+                <div class="space-y-3">
+                    {% for request in pending_requests %}
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">${{ request.amount }}</p>
+                                <p class="text-sm text-gray-600">{{ request.description }}</p>
+                                <p class="text-xs text-gray-500">Requested: {{ request.requested_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                Pending Approval
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
 
         <!-- Recent Transactions -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -93,7 +116,7 @@
 </div>
 
 <script>
-function addFunds() {
+function requestFunds() {
     const amount = document.getElementById('fundAmount').value;
     const messageDiv = document.getElementById('fundMessage');
     

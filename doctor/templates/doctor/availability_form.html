@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load tailwind_tags %}
+
+{% block title %}Add Availability - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Add Availability Window</h1>
+      <p class="text-gray-600">Define when you're available to see patients</p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Day of Week -->
+        <div>
+          <label for="{{ form.day_of_week.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+            Day of Week
+          </label>
+          <select name="{{ form.day_of_week.name }}" 
+                  id="{{ form.day_of_week.id_for_label }}"
+                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900">
+            <option value="">Select a day</option>
+            {% for value, label in form.day_of_week.field.choices %}
+              <option value="{{ value }}" {% if form.day_of_week.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.day_of_week.errors %}
+            <div class="mt-1 text-sm text-red-600">
+              {{ form.day_of_week.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Visit Duration -->
+        <div>
+          <label for="{{ form.visit_duration.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+            Visit Duration (minutes)
+          </label>
+          <input type="number" 
+                 name="{{ form.visit_duration.name }}" 
+                 id="{{ form.visit_duration.id_for_label }}"
+                 value="{{ form.visit_duration.value|default:30 }}"
+                 min="15" 
+                 max="120" 
+                 step="15"
+                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
+                 required>
+          {% if form.visit_duration.errors %}
+            <div class="mt-1 text-sm text-red-600">
+              {{ form.visit_duration.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Start Time -->
+        <div>
+          <label for="{{ form.start_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+            Start Time
+          </label>
+          <div class="relative">
+            <input type="time" 
+                   name="{{ form.start_time.name }}" 
+                   id="{{ form.start_time.id_for_label }}"
+                   value="{{ form.start_time.value|default:'' }}"
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
+                   required>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          {% if form.start_time.errors %}
+            <div class="mt-1 text-sm text-red-600">
+              {{ form.start_time.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- End Time -->
+        <div>
+          <label for="{{ form.end_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+            End Time
+          </label>
+          <div class="relative">
+            <input type="time" 
+                   name="{{ form.end_time.name }}" 
+                   id="{{ form.end_time.id_for_label }}"
+                   value="{{ form.end_time.value|default:'' }}"
+                   class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
+                   required>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          {% if form.end_time.errors %}
+            <div class="mt-1 text-sm text-red-600">
+              {{ form.end_time.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Is Active -->
+      <div class="flex items-center">
+        <input type="checkbox" 
+               name="{{ form.is_active.name }}" 
+               id="{{ form.is_active.id_for_label }}"
+               {% if form.is_active.value %}checked{% endif %}
+               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+        <label for="{{ form.is_active.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700">
+          Active (this availability window is currently active)
+        </label>
+      </div>
+      {% if form.is_active.errors %}
+        <div class="mt-1 text-sm text-red-600">
+          {{ form.is_active.errors.0 }}
+        </div>
+      {% endif %}
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+        <a href="{% url 'doctor:doctor-detail' pk=user.doctor_profile.pk %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+          Cancel
+        </a>
+        <button type="submit" 
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+          Add Availability
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Custom styles for time inputs */
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+  }
+  
+  input[type="time"]::-webkit-datetime-edit-text {
+    color: #374151;
+  }
+  
+  input[type="time"]::-webkit-datetime-edit-hour-field,
+  input[type="time"]::-webkit-datetime-edit-minute-field {
+    color: #374151;
+  }
+</style>
+{% endblock %}

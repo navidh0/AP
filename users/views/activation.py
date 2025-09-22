@@ -4,6 +4,7 @@ from django.core import signing
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
 from django.core.files.base import File
+from datetime import date, datetime
 
 User = get_user_model()
 
@@ -36,6 +37,14 @@ class ActivateView(View):
         # ✅ Extract avatar path directly from token data
         file_path = user_data.pop("avatar_path", None)
 
+        # ✅ Convert ISO format date string back to date object
+        birth_date = user_data.get("birth_date")
+        if birth_date and isinstance(birth_date, str):
+            try:
+                birth_date = datetime.fromisoformat(birth_date).date()
+            except (ValueError, TypeError):
+                birth_date = None
+
         # ✅ Create and save the user
         user = User.objects.create_user(
             username=user_data["username"],
@@ -45,7 +54,7 @@ class ActivateView(View):
             phone_number=user_data["phone_number"],
             ssn=user_data["ssn"],
             role=user_data["role"],
-            birth_date=user_data.get("birth_date"),
+            birth_date=birth_date,
             gender=user_data.get("gender"),
             is_active=True,
             is_email_verified=True,

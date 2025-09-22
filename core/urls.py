@@ -16,6 +16,9 @@ urlpatterns = [
     path('doctor/', include(('doctor.urls', 'doctor'), namespace='doctor')),
     path('wallet/', include(('wallet.urls', 'wallet'), namespace='wallet')),
     path('booking/', include(('booking.urls', 'booking'), namespace='booking')),
+    
+    # Admin dashboard
+    path('admin-dashboard/', include(('core.admin_urls', 'admin_dashboard'), namespace='admin_dashboard')),
 ]
 
 # During development

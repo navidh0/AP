@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+        <p class="text-gray-600">Manage doctors, timeslots, and funding requests</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Patients</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ stats.total_patients }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Doctors</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ stats.total_doctors }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Appointments</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ stats.total_appointments }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100 text-red-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Pending Verifications</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ stats.pending_doctor_verifications }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Pending Doctor Verifications -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Pending Doctor Verifications</h2>
+                <a href="{% url 'admin_dashboard:manage_doctors' %}?status=pending" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+            </div>
+            {% if stats.pending_doctors %}
+                <div class="space-y-3">
+                    {% for doctor in stats.pending_doctors %}
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Dr. {{ doctor.user.get_full_name }}</p>
+                                <p class="text-sm text-gray-600">{{ doctor.specialty }} - {{ doctor.created_at|date:"M d, Y" }}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="verifyDoctor({{ doctor.id }})" 
+                                        class="text-green-600 hover:text-green-700 text-sm font-medium">Verify</button>
+                                <button onclick="rejectDoctor({{ doctor.id }})" 
+                                        class="text-red-600 hover:text-red-700 text-sm font-medium">Reject</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No pending doctor verifications</p>
+            {% endif %}
+        </div>
+
+
+        <!-- Pending Funding Requests -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Pending Funding Requests</h2>
+                <a href="{% url 'admin_dashboard:manage_funding_requests' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+            </div>
+            {% if stats.pending_requests %}
+                <div class="space-y-3">
+                    {% for request in stats.pending_requests %}
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">{{ request.user.get_full_name }}</p>
+                                <p class="text-sm text-gray-600">${{ request.amount }} - {{ request.requested_at|date:"M d, Y" }}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <form method="post" action="{% url 'admin_dashboard:approve_funding_request' request.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-green-600 hover:text-green-700 text-sm font-medium">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'admin_dashboard:reject_funding_request' request.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-600 hover:text-red-700 text-sm font-medium">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No pending funding requests</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <a href="{% url 'admin_dashboard:manage_doctors' %}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Manage Doctors</h3>
+                    <p class="text-sm text-gray-600">View and manage doctor profiles</p>
+                </div>
+            </div>
+        </a>
+
+
+        <a href="{% url 'admin_dashboard:manage_funding_requests' %}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Funding Requests</h3>
+                    <p class="text-sm text-gray-600">Approve or reject funding requests</p>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</div>
+
+<!-- Verification Modal -->
+<div id="verificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 id="verificationModalTitle" class="text-lg font-semibold text-gray-900 mb-4">Verify Doctor</h3>
+                <form id="verificationForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="adminNotes" class="block text-sm font-medium text-gray-700 mb-2">Admin Notes (Optional)</label>
+                        <textarea id="adminNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Add any notes about this verification..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">
+                            Confirm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 id="rejectionModalTitle" class="text-lg font-semibold text-gray-900 mb-4">Reject Doctor Verification</h3>
+                <form id="rejectionForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="rejectionNotes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
+                        <textarea id="rejectionNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Please provide a reason for rejecting this doctor..." required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors">
+                            Reject Doctor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suspension Modal -->
+<div id="suspensionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Suspend Doctor</h3>
+                <form id="suspensionForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="suspensionNotes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Suspension</label>
+                        <textarea id="suspensionNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Please provide a reason for suspending this doctor..." required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition-colors">
+                            Suspend Doctor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentDoctorId = null;
+
+function verifyDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('verificationModalTitle').textContent = 'Verify Doctor';
+    document.getElementById('verificationForm').action = `/admin-dashboard/doctors/${doctorId}/verify/`;
+    document.getElementById('verificationModal').classList.remove('hidden');
+}
+
+function rejectDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('rejectionModalTitle').textContent = 'Reject Doctor';
+    document.getElementById('rejectionForm').action = `/admin-dashboard/doctors/${doctorId}/reject/`;
+    document.getElementById('rejectionModal').classList.remove('hidden');
+}
+
+function suspendDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('suspensionForm').action = `/admin-dashboard/doctors/${doctorId}/suspend/`;
+    document.getElementById('suspensionModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('verificationModal').classList.add('hidden');
+    document.getElementById('rejectionModal').classList.add('hidden');
+    document.getElementById('suspensionModal').classList.add('hidden');
+    currentDoctorId = null;
+}
+
+// Close modal when clicking outside
+document.getElementById('verificationModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+document.getElementById('rejectionModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+document.getElementById('suspensionModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

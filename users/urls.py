@@ -21,6 +21,11 @@ from .views import (
     UserPasswordChangeView,
     UserPasswordChangeDoneView
 )
+from .views.notifications import (
+    NotificationListView,
+    mark_notification_read,
+    mark_all_notifications_read
+)
 
 app_name = 'users'
 
@@ -59,4 +64,9 @@ urlpatterns = [
     path("password-reset/done/", UserPasswordResetDoneView.as_view(), name="password_reset_done"),
     path("reset/<uidb64>/<token>/", UserPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("reset/done/", UserPasswordResetCompleteView.as_view(), name="password_reset_complete"),
+    
+    # --- Notifications ---
+    path("notifications/", NotificationListView.as_view(), name="notifications"),
+    path("notifications/<int:notification_id>/read/", mark_notification_read, name="mark_notification_read"),
+    path("notifications/mark-all-read/", mark_all_notifications_read, name="mark_all_notifications_read"),
 ]
