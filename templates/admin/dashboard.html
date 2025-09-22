@@ -133,6 +133,39 @@
             {% endif %}
         </div>
 
+        <!-- Pending Profile Change Requests -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Pending Profile Changes</h2>
+                <a href="{% url 'admin_dashboard:manage_profile_changes' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+            </div>
+            {% if stats.pending_profile_changes_list %}
+                <div class="space-y-3">
+                    {% for change in stats.pending_profile_changes_list %}
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Dr. {{ change.doctor.user.get_full_name }}</p>
+                                <p class="text-sm text-gray-600">{{ change.field_name }} - {{ change.requested_at|date:"M d, Y" }}</p>
+                                <p class="text-xs text-gray-500">{{ change.reason|truncatewords:10 }}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <form method="post" action="{% url 'admin_dashboard:approve_profile_change' change.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-green-600 hover:text-green-700 text-sm font-medium">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'admin_dashboard:reject_profile_change' change.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-600 hover:text-red-700 text-sm font-medium">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No pending profile change requests</p>
+            {% endif %}
+        </div>
+
     </div>
 
     <!-- Navigation Cards -->
@@ -162,6 +195,20 @@
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-gray-900">Funding Requests</h3>
                     <p class="text-sm text-gray-600">Approve or reject funding requests</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'admin_dashboard:manage_profile_changes' %}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Profile Changes</h3>
+                    <p class="text-sm text-gray-600">Review doctor profile change requests</p>
                 </div>
             </div>
         </a>

@@ -88,8 +88,8 @@ class Doctor(models.Model):
         return f"Dr. {self.user.get_full_name()} - {self.specialty}"
     
     def verify(self, admin_user, notes=None):
-        """Verify the doctor"""
-        if self.verification_status != 'pending':
+        """Verify the doctor (can be used for initial verification or re-verification)"""
+        if self.verification_status not in ['pending', 'rejected']:
             return False
         
         self.is_verified = True

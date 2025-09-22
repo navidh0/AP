@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verification Pending - Doctor{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <!-- Status Icon -->
+            <div class="flex justify-center">
+                {% if verification_status == 'pending' %}
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                {% elif verification_status == 'rejected' %}
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                {% elif verification_status == 'suspended' %}
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
+                        <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Status Message -->
+            <div class="mt-6 text-center">
+                {% if verification_status == 'pending' %}
+                    <h2 class="text-2xl font-bold text-gray-900">Verification Pending</h2>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Your doctor profile is currently under review by our admin team. 
+                        You will be notified once the verification process is complete.
+                    </p>
+                {% elif verification_status == 'rejected' %}
+                    <h2 class="text-2xl font-bold text-gray-900">Verification Rejected</h2>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Your doctor profile verification has been rejected. 
+                        Please contact our support team for more information.
+                    </p>
+                {% elif verification_status == 'suspended' %}
+                    <h2 class="text-2xl font-bold text-gray-900">Account Suspended</h2>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Your doctor account has been suspended. 
+                        Please contact our support team for more information.
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Status Details -->
+            <div class="mt-6">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">Current Status</h3>
+                    <div class="flex items-center">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                            {% if verification_status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% elif verification_status == 'rejected' %}bg-red-100 text-red-800
+                            {% elif verification_status == 'suspended' %}bg-gray-100 text-gray-800
+                            {% endif %}">
+                            {% if verification_status == 'pending' %}Pending Verification
+                            {% elif verification_status == 'rejected' %}Rejected
+                            {% elif verification_status == 'suspended' %}Suspended
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="mt-6">
+                <h3 class="text-sm font-medium text-gray-900 mb-2">What happens next?</h3>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    {% if verification_status == 'pending' %}
+                        <li>• Our admin team will review your profile</li>
+                        <li>• You'll receive an email notification once verified</li>
+                        <li>• You can then access your doctor dashboard</li>
+                    {% elif verification_status == 'rejected' %}
+                        <li>• Contact support to understand the rejection reason</li>
+                        <li>• You may be able to reapply after addressing issues</li>
+                    {% elif verification_status == 'suspended' %}
+                        <li>• Contact support to understand the suspension reason</li>
+                        <li>• Work with support to resolve any issues</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6">
+                <div class="flex flex-col space-y-3">
+                    <a href="{% url 'users:logout' %}" 
+                       class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Logout
+                    </a>
+                    <a href="{% url 'home' %}" 
+                       class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Return to Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- Support Information -->
+            <div class="mt-6 text-center">
+                <p class="text-xs text-gray-500">
+                    Need help? Contact our support team at 
+                    <a href="mailto:support@medicare.com" class="text-blue-600 hover:text-blue-500">
+                        support@medicare.com
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

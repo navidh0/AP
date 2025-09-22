@@ -13,4 +13,7 @@ urlpatterns = [
     path('funding-requests/', admin_views.ManageFundingRequestsView.as_view(), name='manage_funding_requests'),
     path('funding-requests/<int:request_id>/approve/', admin_views.ApproveFundingRequestView.as_view(), name='approve_funding_request'),
     path('funding-requests/<int:request_id>/reject/', admin_views.RejectFundingRequestView.as_view(), name='reject_funding_request'),
+    path('profile-changes/', admin_views.ManageProfileChangesView.as_view(), name='manage_profile_changes'),
+    path('profile-changes/<int:change_id>/approve/', admin_views.ApproveProfileChangeView.as_view(), name='approve_profile_change'),
+    path('profile-changes/<int:change_id>/reject/', admin_views.RejectProfileChangeView.as_view(), name='reject_profile_change'),
 ]

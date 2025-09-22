@@ -34,9 +34,11 @@ class AdminDashboardView(StaffRequiredMixin, TemplateView):
             'total_appointments': Appointment.objects.count(),
             'pending_funding_requests': FundingRequest.objects.filter(status='pending').count(),
             'pending_doctor_verifications': Doctor.objects.filter(verification_status='pending').count(),
+            'pending_profile_changes': ProfileChangeRequest.objects.filter(status='pending').count(),
             'total_wallet_balance': sum(Wallet.objects.values_list('balance', flat=True)),
             'pending_requests': FundingRequest.objects.select_related('user').filter(status='pending').order_by('-requested_at')[:5],
             'pending_doctors': Doctor.objects.select_related('user').filter(verification_status='pending').order_by('-created_at')[:5],
+            'pending_profile_changes_list': ProfileChangeRequest.objects.select_related('doctor__user').filter(status='pending').order_by('-requested_at')[:5],
         }
         context['stats'] = stats
         return context
@@ -187,8 +189,8 @@ class VerifyDoctorView(StaffRequiredMixin, View):
     def post(self, request, doctor_id):
         doctor = get_object_or_404(Doctor, id=doctor_id)
         
-        if doctor.verification_status != 'pending':
-            messages.error(request, 'This doctor has already been processed.')
+        if doctor.verification_status not in ['pending', 'rejected']:
+            messages.error(request, 'This doctor cannot be verified in their current status.')
             return redirect('admin_dashboard:manage_doctors')
         
         try:
@@ -199,10 +201,15 @@ class VerifyDoctorView(StaffRequiredMixin, View):
             else:
                 admin_notes = request.POST.get('admin_notes', '')
             
+            # Store original status for message
+            original_status = doctor.verification_status
             success = doctor.verify(request.user, admin_notes)
             
             if success:
-                messages.success(request, f'Dr. {doctor.user.get_full_name()} has been verified successfully.')
+                if original_status == 'pending':
+                    messages.success(request, f'Dr. {doctor.user.get_full_name()} has been verified successfully.')
+                else:  # rejected
+                    messages.success(request, f'Dr. {doctor.user.get_full_name()} has been re-verified successfully.')
             else:
                 messages.error(request, 'Failed to verify doctor.')
                 
@@ -349,7 +356,17 @@ class ManageProfileChangesView(StaffRequiredMixin, ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        return ProfileChangeRequest.objects.select_related('doctor__user').order_by('-requested_at')
+        """Filter profile changes by status"""
+        queryset = ProfileChangeRequest.objects.select_related('doctor__user').order_by('-requested_at')
+        status = self.request.GET.get('status', 'all')
+        if status != 'all':
+            queryset = queryset.filter(status=status)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_status'] = self.request.GET.get('status', 'all')
+        return context
 
 
 class ApproveProfileChangeView(StaffRequiredMixin, View):
@@ -363,8 +380,12 @@ class ApproveProfileChangeView(StaffRequiredMixin, View):
             return redirect('admin_dashboard:manage_profile_changes')
         
         try:
-            data = json.loads(request.body) if request.body else {}
-            admin_notes = data.get('admin_notes', '')
+            # Handle both JSON and form data
+            if request.content_type == 'application/json':
+                data = json.loads(request.body) if request.body else {}
+                admin_notes = data.get('admin_notes', '')
+            else:
+                admin_notes = request.POST.get('admin_notes', '')
             
             success = change.approve(request.user, admin_notes)
             
@@ -390,8 +411,12 @@ class RejectProfileChangeView(StaffRequiredMixin, View):
             return redirect('admin_dashboard:manage_profile_changes')
         
         try:
-            data = json.loads(request.body) if request.body else {}
-            admin_notes = data.get('admin_notes', '')
+            # Handle both JSON and form data
+            if request.content_type == 'application/json':
+                data = json.loads(request.body) if request.body else {}
+                admin_notes = data.get('admin_notes', '')
+            else:
+                admin_notes = request.POST.get('admin_notes', '')
             
             success = change.reject(request.user, admin_notes)
             

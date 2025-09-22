@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Profile Changes - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Manage Profile Changes</h1>
+        <p class="text-gray-600">Review and approve doctor profile change requests</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            <a href="?status=all" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'all' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                All Changes
+            </a>
+            <a href="?status=pending" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'pending' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Pending
+            </a>
+            <a href="?status=approved" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'approved' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Approved
+            </a>
+            <a href="?status=rejected" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'rejected' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Rejected
+            </a>
+        </div>
+    </div>
+
+    <!-- Profile Changes List -->
+    {% if profile_changes %}
+        <div class="space-y-6">
+            {% for change in profile_changes %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="flex-shrink-0">
+                                    {% if change.doctor.user.avatar %}
+                                        <img class="h-12 w-12 rounded-full" src="{{ change.doctor.user.avatar.url }}" alt="">
+                                    {% else %}
+                                        <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <span class="text-lg font-medium text-gray-700">{{ change.doctor.user.first_name|first }}{{ change.doctor.user.last_name|first }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Dr. {{ change.doctor.user.get_full_name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ change.field_name }} Change Request</p>
+                                    <p class="text-xs text-gray-500">Requested: {{ change.requested_at|date:"M d, Y H:i" }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Change Details -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Current Value</h4>
+                                    <p class="text-sm text-gray-700">{{ change.old_value|truncatewords:20 }}</p>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Requested Value</h4>
+                                    <p class="text-sm text-gray-700">{{ change.new_value|truncatewords:20 }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Reason -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Reason for Change</h4>
+                                <p class="text-sm text-gray-700 bg-yellow-50 p-3 rounded-lg">{{ change.reason }}</p>
+                            </div>
+
+                            <!-- Admin Notes -->
+                            {% if change.admin_notes %}
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Admin Notes</h4>
+                                    <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">{{ change.admin_notes }}</p>
+                                </div>
+                            {% endif %}
+
+                            <!-- Status -->
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if change.status == 'approved' %}bg-green-100 text-green-800
+                                    {% elif change.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif change.status == 'rejected' %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ change.get_status_display }}
+                                </span>
+                                {% if change.processed_at %}
+                                    <span class="text-xs text-gray-500">
+                                        Processed: {{ change.processed_at|date:"M d, Y H:i" }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        {% if change.status == 'pending' %}
+                            <div class="flex flex-col space-y-2 ml-4">
+                                <form method="post" action="{% url 'admin_dashboard:approve_profile_change' change.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                        Approve
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'admin_dashboard:reject_profile_change' change.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if profile_changes.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if profile_changes.has_previous %}
+                        <a href="?page={{ profile_changes.previous_page_number }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-3 py-2 text-sm font-medium text-gray-700 bg-blue-50 border border-blue-300 rounded-md">
+                        Page {{ profile_changes.number }} of {{ profile_changes.paginator.num_pages }}
+                    </span>
+                    
+                    {% if profile_changes.has_next %}
+                        <a href="?page={{ profile_changes.next_page_number }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <div class="text-center py-12">
+            <div class="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No profile changes found</h3>
+            <p class="text-gray-600">There are no profile change requests matching your criteria.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

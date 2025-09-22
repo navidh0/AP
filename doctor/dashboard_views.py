@@ -17,7 +17,18 @@ from wallet.models import Wallet, Transaction
 class DoctorRequiredMixin(UserPassesTestMixin):
     """Mixin to require doctor access"""
     def test_func(self):
-        return self.request.user.is_authenticated and hasattr(self.request.user, 'doctor_profile')
+        return (self.request.user.is_authenticated and 
+                hasattr(self.request.user, 'doctor_profile') and
+                self.request.user.doctor_profile.verification_status == 'verified')
+    
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated and hasattr(self.request.user, 'doctor_profile'):
+            # Doctor profile exists but not verified
+            from django.shortcuts import render
+            return render(self.request, 'doctor/verification_pending.html', {
+                'verification_status': self.request.user.doctor_profile.verification_status
+            })
+        return super().handle_no_permission()
 
 
 class DoctorDashboardView(DoctorRequiredMixin, TemplateView):

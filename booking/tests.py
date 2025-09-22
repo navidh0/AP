@@ -45,10 +45,12 @@ class AppointmentModelTest(TestCase):
         self.patient_user.save()
         
         # Create doctor
-        self.doctor = Doctor.objects.create(
+        self.doctor, created = Doctor.objects.get_or_create(
             user=self.doctor_user,
-            specialty='Cardiology',
-            fee=100.00
+            defaults={
+                'specialty': 'Cardiology',
+                'fee': 100.00
+            }
         )
         
         # Create timeslot
