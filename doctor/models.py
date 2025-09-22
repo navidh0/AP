@@ -15,12 +15,14 @@ class DoctorQuerySet(models.QuerySet):
 
     def search(self, name=None, specialty=None):
         """Search doctors by name, specialty, or both."""
+        from django.db.models import Q
         qs = self
         if name:
             qs = qs.filter(
                 Q(user__username__icontains=name)
                 | Q(user__first_name__icontains=name)
                 | Q(user__last_name__icontains=name)
+                | Q(user__email__icontains=name)
             )
         if specialty:
             qs = qs.filter(specialty__icontains=specialty)
@@ -88,8 +90,8 @@ class Doctor(models.Model):
         return f"Dr. {self.user.get_full_name()} - {self.specialty}"
     
     def verify(self, admin_user, notes=None):
-        """Verify the doctor"""
-        if self.verification_status != 'pending':
+        """Verify the doctor (can be used for initial verification or re-verification)"""
+        if self.verification_status not in ['pending', 'rejected']:
             return False
         
         self.is_verified = True

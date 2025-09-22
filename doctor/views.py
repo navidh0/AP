@@ -9,7 +9,7 @@ from django.db.models import Avg
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import JsonResponse
-
+from django.db.models import Q
 
 class DoctorListView(ListView):
     """View to display a list of all doctors."""
@@ -25,7 +25,7 @@ class DoctorListView(ListView):
         """
         Overrides the default queryset to filter based on GET parameters.
         """
-        from django.db.models import Q
+        
         
         queryset = Doctor.objects.all()
 

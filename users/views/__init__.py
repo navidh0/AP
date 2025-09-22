@@ -5,6 +5,7 @@ from .verify_phone import VerifyPhoneView
 from .activation import ActivateView
 from .resend_activation import ResendActivationView
 from .login import UserLoginView
+from .logout import UserLogoutView
 from .profile import UpdateProfileView
 from .password_change import (
     UserPasswordChangeView, UserPasswordChangeDoneView
@@ -24,6 +25,7 @@ __all__ = [
     "ActivateView",
     "ResendActivationView",
     "UserLoginView",
+    "UserLogoutView",
     "UpdateProfileView",
     "UserPasswordChangeView",
     "UserPasswordChangeDoneView",

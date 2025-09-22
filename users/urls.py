@@ -5,6 +5,7 @@ from django.urls import path
 
 from .views import (
     UserLoginView, 
+    UserLogoutView,
     UserSignUpView, 
     RetrySignUpView,
     ActivateView, 
@@ -45,7 +46,7 @@ urlpatterns = [
 
     # --- Authentication ---
     path("login/", UserLoginView.as_view(), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("logout/", UserLogoutView.as_view(), name="logout"),
 
     path("otp-login/", OTPLoginView.as_view(), name="otp_login"),
     path("retry-otp-login/", RetryOTPLoginView.as_view(), name="retry_otp_login"),

@@ -30,7 +30,7 @@ class DoctorListView(ListView):
         # Search functionality - search by name or specialty
         search_query = self.request.GET.get('search')
         if search_query:
-            queryset = queryset.search(name=search_query, specialty=search_query)
+            queryset = queryset.search(name=search_query)
         
         # Specialty filter
         specialty = self.request.GET.get('specialty')
@@ -61,7 +61,7 @@ class DoctorListView(ListView):
             except (ValueError, TypeError):
                 pass
             
-        return queryset.select_related('user')
+        return queryset.select_related('user').order_by('user__first_name')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
