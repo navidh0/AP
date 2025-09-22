@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Doctors - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Manage Doctors</h1>
+        <p class="text-gray-600">View and manage all doctor profiles and verification status</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            <a href="?status=all" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'all' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                All Doctors
+            </a>
+            <a href="?status=pending" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'pending' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Pending Verification
+            </a>
+            <a href="?status=verified" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'verified' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Verified
+            </a>
+            <a href="?status=rejected" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'rejected' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Rejected
+            </a>
+            <a href="?status=suspended" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'suspended' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Suspended
+            </a>
+        </div>
+    </div>
+
+    <!-- Doctors List -->
+    {% if doctors %}
+        <div class="space-y-6">
+            {% for doctor in doctors %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-6">
+                            <div class="flex-shrink-0">
+                                {% if doctor.user.avatar %}
+                                    <img class="h-16 w-16 rounded-full" src="{{ doctor.user.avatar.url }}" alt="">
+                                {% else %}
+                                    <div class="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <span class="text-xl font-medium text-gray-700">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900">Dr. {{ doctor.user.get_full_name }}</h3>
+                                <p class="text-gray-600">{{ doctor.specialty }}</p>
+                                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Fee: ${{ doctor.fee }}</span>
+                                    <span>•</span>
+                                    <span>Rating: {{ doctor.rating|floatformat:1 }}/5.0</span>
+                                    <span>•</span>
+                                    <span>Joined: {{ doctor.user.date_joined|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-700">{{ doctor.bio|truncatewords:20 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if doctor.verification_status == 'verified' %}bg-green-100 text-green-800
+                                    {% elif doctor.verification_status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif doctor.verification_status == 'rejected' %}bg-red-100 text-red-800
+                                    {% elif doctor.verification_status == 'suspended' %}bg-gray-100 text-gray-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ doctor.get_verification_status_display }}
+                                </span>
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if doctor.availability %}bg-green-100 text-green-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if doctor.availability %}Available{% else %}Unavailable{% endif %}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <p>Email: {{ doctor.user.email }}</p>
+                                <p>Phone: {{ doctor.user.phone_number|default:"Not provided" }}</p>
+                                {% if doctor.verified_at %}
+                                    <p>Verified: {{ doctor.verified_at|date:"M d, Y" }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Doctor Details -->
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">Fee</h4>
+                            <p class="text-sm text-gray-600">${{ doctor.fee }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">Rating</h4>
+                            <p class="text-sm text-gray-600">Rating: {{ doctor.rating }}/5</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">Availability</h4>
+                            <p class="text-sm text-gray-600">
+                                {% if doctor.availabilities.exists %}
+                                    {{ doctor.availabilities.count }} window(s) set
+                                {% else %}
+                                    No availability set
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">Appointments</h4>
+                            <p class="text-sm text-gray-600">
+                                {{ doctor.appointments.count }} total
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Admin Notes -->
+                    {% if doctor.verification_notes %}
+                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-900 mb-2">Admin Notes</h4>
+                            <p class="text-sm text-gray-700">{{ doctor.verification_notes }}</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        {% if doctor.verification_status == 'pending' %}
+                            <button onclick="verifyDoctor({{ doctor.id }})" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                Verify Doctor
+                            </button>
+                            <button onclick="rejectDoctor({{ doctor.id }})" 
+                                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                Reject Verification
+                            </button>
+                        {% elif doctor.verification_status == 'verified' %}
+                            <button onclick="suspendDoctor({{ doctor.id }})" 
+                                    class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium">
+                                Suspend Doctor
+                            </button>
+                            <button onclick="rejectDoctor({{ doctor.id }})" 
+                                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                Reject Doctor
+                            </button>
+                        {% elif doctor.verification_status == 'suspended' %}
+                            <button onclick="verifyDoctor({{ doctor.id }})" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                Reactivate Doctor
+                            </button>
+                        {% elif doctor.verification_status == 'rejected' %}
+                            <button onclick="verifyDoctor({{ doctor.id }})" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                Re-verify Doctor
+                            </button>
+                        {% endif %}
+                        
+                        <button onclick="toggleAvailability({{ doctor.id }})" 
+                                class="{% if doctor.availability %}bg-red-600 hover:bg-red-700{% else %}bg-green-600 hover:bg-green-700{% endif %} text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                            {% if doctor.availability %}Make Unavailable{% else %}Make Available{% endif %}
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if doctors.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if doctors.has_previous %}
+                        <a href="?page={{ doctors.previous_page_number }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-3 py-2 text-sm font-medium text-gray-700 bg-blue-50 border border-blue-300 rounded-md">
+                        Page {{ doctors.number }} of {{ doctors.paginator.num_pages }}
+                    </span>
+                    
+                    {% if doctors.has_next %}
+                        <a href="?page={{ doctors.next_page_number }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <div class="text-center py-12">
+            <div class="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No doctors found</h3>
+            <p class="text-gray-600">There are no doctors registered in the system yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Verification Modal -->
+<div id="verificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 id="verificationModalTitle" class="text-lg font-semibold text-gray-900 mb-4">Verify Doctor</h3>
+                <form id="verificationForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="adminNotes" class="block text-sm font-medium text-gray-700 mb-2">Admin Notes (Optional)</label>
+                        <textarea id="adminNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Add any notes about this verification..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">
+                            Confirm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 id="rejectionModalTitle" class="text-lg font-semibold text-gray-900 mb-4">Reject Doctor Verification</h3>
+                <form id="rejectionForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="rejectionNotes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
+                        <textarea id="rejectionNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Please provide a reason for rejecting this doctor..." required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors">
+                            Reject Doctor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suspension Modal -->
+<div id="suspensionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Suspend Doctor</h3>
+                <form id="suspensionForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="suspensionNotes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Suspension</label>
+                        <textarea id="suspensionNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Please provide a reason for suspending this doctor..." required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition-colors">
+                            Suspend Doctor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentDoctorId = null;
+
+function verifyDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('verificationModalTitle').textContent = 'Verify Doctor';
+    document.getElementById('verificationForm').action = `/admin-dashboard/doctors/${doctorId}/verify/`;
+    document.getElementById('verificationModal').classList.remove('hidden');
+}
+
+function rejectDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('rejectionModalTitle').textContent = 'Reject Doctor';
+    document.getElementById('rejectionForm').action = `/admin-dashboard/doctors/${doctorId}/reject/`;
+    document.getElementById('rejectionModal').classList.remove('hidden');
+}
+
+function suspendDoctor(doctorId) {
+    currentDoctorId = doctorId;
+    document.getElementById('suspensionForm').action = `/admin-dashboard/doctors/${doctorId}/suspend/`;
+    document.getElementById('suspensionModal').classList.remove('hidden');
+}
+
+function toggleAvailability(doctorId) {
+    if (confirm('Are you sure you want to toggle this doctor\'s availability?')) {
+        fetch(`/admin-dashboard/doctors/${doctorId}/toggle-availability/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error toggling availability');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error toggling availability');
+        });
+    }
+}
+
+function closeModal() {
+    document.getElementById('verificationModal').classList.add('hidden');
+    document.getElementById('rejectionModal').classList.add('hidden');
+    document.getElementById('suspensionModal').classList.add('hidden');
+    currentDoctorId = null;
+}
+
+// Close modal when clicking outside
+document.getElementById('verificationModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+document.getElementById('rejectionModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+document.getElementById('suspensionModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

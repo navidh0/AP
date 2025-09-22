@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Check Your Email - MediCare{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 flex items-center justify-center">
+    <div class="max-w-lg w-full">
+
+        <!-- Card -->
+        <div class="bg-surface rounded-2xl shadow-md p-8 text-center space-y-6">
+            <!-- Header -->
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900">
+                Check Your Email
+            </h2>
+            <p class="text-sm text-neutral-600">
+                We've sent activation instructions to your email.  
+                If you don't see the email, please check your spam folder.
+            </p>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <!-- Resend Button with Timer -->
+                <a id="resend-btn"
+                   href="{% url 'users:resend_activation' %}"
+                   data-final-text="Resend Activation Email"
+                   class="px-3 py-1 sm:px-6 sm:py-3 rounded-xl bg-gray-400 text-white font-medium cursor-not-allowed
+                          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    Resend Activation Email (<span id="countdown">30</span>s)
+                </a>
+
+                <a href="{% url 'users:retry_signup' %}"
+                   class="px-3 py-1 sm:px-6 sm:py-3 rounded-xl border border-neutral-300 text-neutral-700 
+                          hover:bg-neutral-50 transition-colors">
+                    Change Email
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/countdown.js' %}"></script>
+{% endblock %}

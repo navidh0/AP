@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Funding Requests - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-yellow-50 to-orange-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Manage Funding Requests</h1>
+        <p class="text-gray-600">Approve or reject patient funding requests</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            <a href="?status=pending" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'pending' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Pending ({{ requests|length }})
+            </a>
+            <a href="?status=approved" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'approved' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Approved
+            </a>
+            <a href="?status=rejected" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'rejected' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Rejected
+            </a>
+            <a href="?status=all" 
+               class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors
+               {% if current_status == 'all' %}bg-white text-gray-900 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                All
+            </a>
+        </div>
+    </div>
+
+    <!-- Funding Requests List -->
+    {% if requests %}
+        <div class="space-y-4">
+            {% for request in requests %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ request.user.get_full_name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ request.user.email }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-bold text-gray-900">${{ request.amount }}</p>
+                                    <p class="text-sm text-gray-500">{{ request.requested_at|date:"M d, Y H:i" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <p class="text-sm text-gray-700">{{ request.description }}</p>
+                                
+                                {% if request.admin_notes %}
+                                    <div class="mt-2 p-3 bg-gray-50 rounded-lg">
+                                        <p class="text-sm font-medium text-gray-900">Admin Notes:</p>
+                                        <p class="text-sm text-gray-700">{{ request.admin_notes }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-start lg:items-end space-y-3">
+                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
+                                {% if request.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif request.status == 'approved' %}bg-green-100 text-green-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ request.get_status_display }}
+                            </span>
+                            
+                            {% if request.status == 'pending' %}
+                                <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                                    <button onclick="approveRequest({{ request.id }})" 
+                                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex-1 sm:flex-none">
+                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Approve
+                                    </button>
+                                    <button onclick="rejectRequest({{ request.id }})" 
+                                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium flex-1 sm:flex-none">
+                                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                        Reject
+                                    </button>
+                                </div>
+                            {% elif request.processed_by %}
+                                <div class="text-left lg:text-right">
+                                    <p class="text-xs text-gray-500">Processed by {{ request.processed_by.get_full_name }}</p>
+                                    <p class="text-xs text-gray-500">{{ request.processed_at|date:"M d, Y H:i" }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if requests.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if requests.has_previous %}
+                        <a href="?page={{ requests.previous_page_number }}&status={{ current_status }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-3 py-2 text-sm font-medium text-gray-700 bg-blue-50 border border-blue-300 rounded-md">
+                        Page {{ requests.number }} of {{ requests.paginator.num_pages }}
+                    </span>
+                    
+                    {% if requests.has_next %}
+                        <a href="?page={{ requests.next_page_number }}&status={{ current_status }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <div class="text-center py-12">
+            <div class="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No funding requests found</h3>
+            <p class="text-gray-600">There are no funding requests matching your current filter.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Approval Modal -->
+<div id="approvalModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Approve Funding Request</h3>
+                <form id="approvalForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="adminNotes" class="block text-sm font-medium text-gray-700 mb-2">Admin Notes (Optional)</label>
+                        <textarea id="adminNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Add any notes about this approval..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">
+                            Approve Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="rejectionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Reject Funding Request</h3>
+                <form id="rejectionForm" method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="rejectionNotes" class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
+                        <textarea id="rejectionNotes" name="admin_notes" rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Please provide a reason for rejecting this request..." required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors">
+                            Reject Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentRequestId = null;
+
+function approveRequest(requestId) {
+    currentRequestId = requestId;
+    document.getElementById('approvalForm').action = `/admin-dashboard/funding-requests/${requestId}/approve/`;
+    document.getElementById('approvalModal').classList.remove('hidden');
+}
+
+function rejectRequest(requestId) {
+    currentRequestId = requestId;
+    document.getElementById('rejectionForm').action = `/admin-dashboard/funding-requests/${requestId}/reject/`;
+    document.getElementById('rejectionModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('approvalModal').classList.add('hidden');
+    document.getElementById('rejectionModal').classList.add('hidden');
+    currentRequestId = null;
+}
+
+// Close modal when clicking outside
+document.getElementById('approvalModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+document.getElementById('rejectionModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

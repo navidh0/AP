@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Available Doctors - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-8 mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+            Find Your Doctor
+        </h1>
+        <p class="text-neutral-600 text-lg">
+            Choose from our qualified medical professionals and book your appointment
+        </p>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-surface rounded-xl shadow-md p-6 mb-8">
+        <form method="get" class="space-y-6">
+            <!-- Main Search Row -->
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Input -->
+                <div class="flex-1">
+                    <label for="search" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Search by Doctor Name or Specialty
+                    </label>
+                    <input 
+                        type="text" 
+                        id="search" 
+                        name="search" 
+                        value="{{ search_query }}"
+                        placeholder="Enter doctor's name or specialty..."
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <!-- Specialty Filter -->
+                <div class="md:w-64">
+                    <label for="specialty" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Specialty
+                    </label>
+                    <select 
+                        id="specialty" 
+                        name="specialty" 
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                        <option value="">All Specialties</option>
+                        {% for specialty in specialties %}
+                            <option value="{{ specialty }}" {% if specialty_filter == specialty %}selected{% endif %}>
+                                {{ specialty }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Search Button -->
+                <div class="flex items-end">
+                    <button 
+                        type="submit" 
+                        class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                    >
+                        Search
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Advanced Filters Row -->
+            <div class="border-t border-neutral-200 pt-4">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <!-- Fee Range -->
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">
+                            Fee Range
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                type="number" 
+                                name="min_fee" 
+                                value="{{ min_fee }}"
+                                placeholder="Min fee"
+                                min="0"
+                                step="0.01"
+                                class="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            >
+                            <span class="flex items-center text-neutral-500">to</span>
+                            <input 
+                                type="number" 
+                                name="max_fee" 
+                                value="{{ max_fee }}"
+                                placeholder="Max fee"
+                                min="0"
+                                step="0.01"
+                                class="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="md:w-48">
+                        <label for="min_rating" class="block text-sm font-medium text-neutral-700 mb-2">
+                            Minimum Rating
+                        </label>
+                        <select 
+                            id="min_rating" 
+                            name="min_rating" 
+                            class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
+                            <option value="">Any Rating</option>
+                            <option value="4.5" {% if min_rating == "4.5" %}selected{% endif %}>4.5+ Stars</option>
+                            <option value="4.0" {% if min_rating == "4.0" %}selected{% endif %}>4.0+ Stars</option>
+                            <option value="3.5" {% if min_rating == "3.5" %}selected{% endif %}>3.5+ Stars</option>
+                            <option value="3.0" {% if min_rating == "3.0" %}selected{% endif %}>3.0+ Stars</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Clear Filters Button -->
+                    <div class="flex items-end">
+                        <a 
+                            href="{% url 'booking:doctor_list' %}" 
+                            class="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
+                        >
+                            Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Count -->
+    {% if doctors %}
+        <div class="mb-6">
+            <p class="text-neutral-600">
+                Found {{ doctors|length }} doctor{{ doctors|length|pluralize }} 
+                {% if search_query or specialty_filter %}
+                    matching your criteria
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+
+    <!-- Doctors Grid -->
+    {% if doctors %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for doctor in doctors %}
+                <div class="bg-surface rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-neutral-200">
+                    <!-- Doctor Image -->
+                    <div class="p-6 pb-4">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <img 
+                                src="{{ doctor.user.get_avatar_url }}" 
+                                alt="{{ doctor.user.get_full_name }}"
+                                class="w-16 h-16 rounded-full object-cover border-2 border-primary-200"
+                            >
+                            <div>
+                                <h3 class="text-xl font-semibold text-neutral-900">
+                                    Dr. {{ doctor.user.get_full_name }}
+                                </h3>
+                                <p class="text-primary-600 font-medium">{{ doctor.specialty }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Doctor Info -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center text-neutral-600">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-sm">Available</span>
+                            </div>
+                            
+                            <div class="flex items-center text-neutral-600">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm">Fee: ${{ doctor.fee }}</span>
+                            </div>
+                            
+                            <div class="flex items-center text-neutral-600">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                <span class="text-sm">Rating: {{ doctor.average_rating|floatformat:1 }}/5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="px-6 pb-6">
+                        <a 
+                            href="{% url 'booking:doctor_detail' doctor.pk %}" 
+                            class="w-full bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium text-center block"
+                        >
+                            View Available Slots
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if min_fee %}&min_fee={{ min_fee }}{% endif %}{% if max_fee %}&max_fee={{ max_fee }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}" 
+                           class="px-3 py-2 text-sm font-medium text-neutral-500 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-3 py-2 text-sm font-medium text-neutral-700 bg-primary-50 border border-primary-300 rounded-md">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if min_fee %}&min_fee={{ min_fee }}{% endif %}{% if max_fee %}&max_fee={{ max_fee }}{% endif %}{% if min_rating %}&min_rating={{ min_rating }}{% endif %}" 
+                           class="px-3 py-2 text-sm font-medium text-neutral-500 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <!-- No Results -->
+        <div class="text-center py-12">
+            <div class="bg-neutral-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-neutral-900 mb-2">No doctors found</h3>
+            <p class="text-neutral-600 mb-6">
+                {% if search_query or specialty_filter %}
+                    Try adjusting your search criteria or browse all available doctors.
+                {% else %}
+                    No doctors are currently available. Please check back later.
+                {% endif %}
+            </p>
+            {% if search_query or specialty_filter %}
+                <a href="{% url 'booking:doctor_list' %}" 
+                   class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    View All Doctors
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

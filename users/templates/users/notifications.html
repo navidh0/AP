@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - MediCare{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Notifications</h1>
+                <p class="text-gray-600">Stay updated with your appointments and account activity</p>
+            </div>
+            {% if unread_count > 0 %}
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                    {{ unread_count }} unread
+                </span>
+                <a href="{% url 'users:mark_all_notifications_read' %}" 
+                   class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                    Mark All Read
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Notifications List -->
+    {% if notifications %}
+        <div class="space-y-4">
+            {% for notification in notifications %}
+            <div class="bg-white rounded-lg shadow-md p-6 {% if not notification.is_read %}border-l-4 border-blue-500{% endif %}">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 {% if not notification.is_read %}font-bold{% endif %}">
+                                {{ notification.title }}
+                            </h3>
+                            {% if not notification.is_read %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                New
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-gray-700 mb-3">{{ notification.message }}</p>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{{ notification.created_at|date:"M d, Y" }}</span>
+                            <span>{{ notification.created_at|time:"g:i A" }}</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                {% if notification.notification_type == 'appointment_booked' %}bg-green-100 text-green-800
+                                {% elif notification.notification_type == 'appointment_confirmed' %}bg-green-100 text-green-800
+                                {% elif notification.notification_type == 'appointment_cancelled' %}bg-red-100 text-red-800
+                                {% elif notification.notification_type == 'appointment_cancelled_by_doctor' %}bg-orange-100 text-orange-800
+                                {% elif notification.notification_type == 'refund_processed' %}bg-blue-100 text-blue-800
+                                {% elif notification.notification_type == 'wallet_funded' %}bg-purple-100 text-purple-800
+                                {% elif notification.notification_type == 'wallet_funding_approved' %}bg-green-100 text-green-800
+                                {% elif notification.notification_type == 'wallet_funding_rejected' %}bg-red-100 text-red-800
+                                {% elif notification.notification_type == 'day_off_approved' %}bg-green-100 text-green-800
+                                {% elif notification.notification_type == 'day_off_rejected' %}bg-red-100 text-red-800
+                                {% elif notification.notification_type == 'profile_change_approved' %}bg-green-100 text-green-800
+                                {% elif notification.notification_type == 'profile_change_rejected' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ notification.get_notification_type_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 ml-4">
+                        {% if not notification.is_read %}
+                        <a href="{% url 'users:mark_notification_read' notification.id %}" 
+                           class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                            Mark as Read
+                        </a>
+                        {% endif %}
+                        
+                        {% if notification.appointment %}
+                        <a href="{% url 'booking:patient_appointment_list' %}" 
+                           class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                            View Appointment
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                        <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Previous
+                    </a>
+                {% endif %}
+
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-700">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                        Next
+                        <svg class="h-5 w-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 1 1 15 0v5z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Notifications</h3>
+            <p class="text-gray-600">You don't have any notifications yet. We'll notify you about important updates regarding your appointments and account.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

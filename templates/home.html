@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - MediCare{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-primary-50 to-primary-100 py-16 md:py-24 px-4 sm:px-6 rounded-2xl mb-4">
+  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
+    <!-- Left Text -->
+    <div class="flex-1 text-center lg:text-left mb-10 lg:mb-0">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 leading-tight">
+        Your Most Trusted <br /><span class="text-primary-700">Health Partner</span>
+      </h1>
+      <p class="mt-4 text-neutral-600 text-lg sm:text-xl">
+        We are committed to providing comprehensive healthcare services with
+        professionalism, compassion, and care — because your health is our priority.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="{% url 'booking:doctor_list' %}" class="border-2 border-primary-600 text-primary-700 font-semibold px-8 py-4 rounded-xl shadow-sm transition-transform duration-300 transform hover:-translate-y-1 hover:shadow-md">
+          Get Started
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Image -->
+    <div class="hidden flex-1 sm:flex justify-center">
+      <div class="relative w-full max-w-md">
+        <div class="absolute -inset-4 bg-primary-200 rounded-2xl rotate-3 opacity-60"></div>
+        <img src="{% static 'images/hero-doctor.png' %}" alt="Doctor holding stethoscope" class="relative rounded-2xl shadow-lg object-contain w-full max-h-[400px]">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="bg-gradient-to-br from-primary-50 to-neutral-50 rounded-2xl mb-4 py-16">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+        Why Choose Us?
+      </h2>
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        We provide exceptional healthcare services with a focus on patient comfort and cutting-edge medical technology.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Appointment Card -->
+      <div class="bg-surface rounded-2xl shadow-md p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-primary-500">
+        <div class="flex justify-center mb-6">
+          <div class="bg-primary-100 p-4 rounded-full">
+            <!-- Calendar Check Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-primary-600" fill="currentColor" viewBox="0 0 640 640">
+              <path d="M424 64C437.3 64 448 74.7 448 88L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 88C192 74.7 202.7 64 216 64C229.3 64 240 74.7 240 88L240 128L400 128L400 88C400 74.7 410.7 64 424 64zM160 176C151.2 176 144 183.2 144 192L144 480C144 488.8 151.2 496 160 496L480 496C488.8 496 496 488.8 496 480L496 192C496 183.2 488.8 176 480 176L160 176zM390.7 241.9C398.5 231.2 413.5 228.8 424.2 236.6C434.9 244.4 437.3 259.4 429.5 270.1L307.4 438.1C303.3 443.8 296.9 447.4 289.9 447.9C282.9 448.4 276 445.9 271.1 441L215.2 385.1C205.8 375.7 205.8 360.5 215.2 351.2C224.6 341.9 239.8 341.8 249.1 351.2L285.1 387.2L390.7 242z"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="text-xl font-semibold text-neutral-800 mb-3">Easy Appointments</h3>
+        <p class="text-neutral-600">
+          Book appointments online, anytime — 24/7 with our convenient scheduling system.
+        </p>
+      </div>
+
+      <!-- Emergency Cases Card -->
+      <div class="bg-surface rounded-2xl shadow-md p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-secondary-500">
+        <div class="flex justify-center mb-6">
+          <div class="bg-secondary-100 p-4 rounded-full">
+            <!-- Headset Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.079 6.839a3 3 0 0 0-4.255.1M13 20h1.083A3.916 3.916 0 0 0 18 16.083V9A6 6 0 1 0 6 9v7m7 4v-1a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1Zm-7-4v-6H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1Zm12-6h1a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1v-6Z"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="text-xl font-semibold text-neutral-800 mb-3">Emergency Cases</h3>
+        <p class="text-neutral-600 mb-4">
+          Immediate assistance when you need it most. Our emergency team is always ready.
+        </p>
+        <a href="tel:+8801751040425" class="text-secondary-700 font-semibold hover:text-secondary-800 transition-colors">
+          +88 01751 040425
+        </a>
+      </div>
+
+      <!-- Working Hours Card -->
+      <div class="bg-surface rounded-2xl shadow-md p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-success-500">
+        <div class="flex justify-center mb-6">
+          <div class="bg-success-100 p-4 rounded-full">
+            <!-- Clock Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-success-600" fill="currentColor" viewBox="0 0 640 640">
+              <path d="M528 320C528 434.9 434.9 528 320 528C205.1 528 112 434.9 112 320C112 205.1 205.1 112 320 112C434.9 112 528 205.1 528 320zM64 320C64 461.4 178.6 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320zM296 184L296 320C296 328 300 335.5 306.7 340L402.7 404C413.7 411.4 428.6 408.4 436 397.3C443.4 386.2 440.4 371.4 429.3 364L344 307.2L344 184C344 170.7 333.3 160 320 160C306.7 160 296 170.7 296 184z"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="text-xl font-semibold text-neutral-800 mb-3">Convenient Hours</h3>
+        <p class="text-neutral-600 mb-2">
+          We're here when you need us:
+        </p>
+        <p class="text-success-700 font-medium">
+          Mon – Sat: <span class="font-semibold">8 AM – 10 PM</span>
+        </p>
+        <p class="text-neutral-500 text-sm mt-2">
+          Sundays: Emergency services only
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-16 mb-4 rounded-2xl bg-gradient-to-br from-primary-50 to-secondary-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+        Our Services
+      </h2>
+      <p class="text-neutral-600 max-w-2xl mx-auto">
+        Comprehensive healthcare services tailored to meet your individual needs.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Service 1 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-primary-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Primary Care</h3>
+          <p class="text-neutral-600">Comprehensive health services for all ages.</p>
+        </div>
+      </div>
+      
+      <!-- Service 2 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-secondary-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Specialist Referrals</h3>
+          <p class="text-neutral-600">Access to top specialists in every field.</p>
+        </div>
+      </div>
+      
+      <!-- Service 3 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-warning-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Lab Tests</h3>
+          <p class="text-neutral-600">Fast and accurate diagnostic testing.</p>
+        </div>
+      </div>
+      
+      <!-- Service 4 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-success-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Preventive Care</h3>
+          <p class="text-neutral-600">Stay healthy with regular check-ups.</p>
+        </div>
+      </div>
+      
+      <!-- Service 5 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-primary-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Telemedicine</h3>
+          <p class="text-neutral-600">Virtual consultations from home.</p>
+        </div>
+      </div>
+      
+      <!-- Service 6 -->
+      <div class="bg-surface rounded-xl p-6 shadow-md flex items-start">
+        <div class="bg-secondary-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg text-neutral-800 mb-2">Health Planning</h3>
+          <p class="text-neutral-600">Personalized health management plans.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-primary-700 rounded-2xl text-white">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to take control of your health?</h2>
+    <p class="text-primary-100 max-w-2xl mx-auto mb-8 text-lg">
+      Join thousands of satisfied patients who have experienced our exceptional healthcare services.
+    </p>
+    <a href="{% url 'booking:doctor_list' %}" class="bg-white text-primary-700 hover:bg-primary-50 font-semibold px-8 py-4 rounded-xl shadow-md transition duration-300 inline-block">
+      Book an Appointment
+    </a>
+  </div>
+</section>
+
+{% endblock %}

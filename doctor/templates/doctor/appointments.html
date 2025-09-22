@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Appointments - Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">My Appointments</h1>
+                <p class="text-gray-600">View and manage all your appointments</p>
+            </div>
+            <a href="{% url 'doctor:dashboard' %}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="get" class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-48">
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="all" {% if current_status == 'all' %}selected{% endif %}>All Statuses</option>
+                    <option value="scheduled" {% if current_status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                    <option value="confirmed" {% if current_status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if current_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="flex-1 min-w-48">
+                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                <input type="date" name="date" id="date" value="{{ current_date }}" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Appointments List -->
+    {% if appointments %}
+        <div class="space-y-6">
+            {% for appointment in appointments %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4 mb-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ appointment.patient.get_full_name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ appointment.patient.email }}</p>
+                                    {% if appointment.patient.phone_number %}
+                                        <p class="text-sm text-gray-600">{{ appointment.patient.phone_number }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
+                                        {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
+                                        {% elif appointment.status == 'scheduled' %}bg-yellow-100 text-yellow-800
+                                        {% elif appointment.status == 'completed' %}bg-blue-100 text-blue-800
+                                        {% elif appointment.status == 'cancelled' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Appointment Time</h4>
+                                    <p class="text-sm text-gray-600">
+                                        {{ appointment.timeslot.start_time|date:"M d, Y" }}<br>
+                                        {{ appointment.timeslot.start_time|date:"H:i" }} - {{ appointment.timeslot.end_time|date:"H:i" }}
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Fee</h4>
+                                    <p class="text-sm text-gray-600">${{ appointment.doctor.fee }}</p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Created</h4>
+                                    <p class="text-sm text-gray-600">{{ appointment.created_at|date:"M d, Y H:i" }}</p>
+                                </div>
+                            </div>
+
+                            {% if appointment.notes %}
+                                <div class="bg-yellow-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Notes</h4>
+                                    <p class="text-sm text-gray-700">{{ appointment.notes }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if appointments.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex space-x-2">
+                    {% if appointments.has_previous %}
+                        <a href="?page={{ appointments.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_date %}&date={{ current_date }}{% endif %}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in appointments.paginator.page_range %}
+                        {% if appointments.number == num %}
+                            <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                                {{ num }}
+                            </span>
+                        {% elif num > appointments.number|add:'-3' and num < appointments.number|add:'3' %}
+                            <a href="?page={{ num }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_date %}&date={{ current_date }}{% endif %}" 
+                               class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if appointments.has_next %}
+                        <a href="?page={{ appointments.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_date %}&date={{ current_date }}{% endif %}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No appointments found</h3>
+            <p class="text-gray-600">There are no appointments matching your current filters.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
