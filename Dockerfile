@@ -1,44 +1,24 @@
-# ====================================
-# Stage 1: Build Tailwind CSS
-# ====================================
-FROM node:20-alpine AS assets
-WORKDIR /app/theme/static_src
+FROM python:3.12-slim AS base
 
-# Install Node dependencies
-COPY theme/static_src/package*.json ./
-RUN npm ci --no-audit --no-fund
-
-# Copy Tailwind config + source files
-COPY theme/static_src ./
-
-# Build Tailwind CSS → output to theme/static/css/dist/styles.css
-RUN mkdir -p /app/theme/static/css/dist \
- && npx tailwindcss -i ./src/styles.css -o /app/theme/static/css/dist/styles.css --minify
-
-# ====================================
-# Stage 2: Django + Gunicorn
-# ====================================
-FROM python:3.12-slim AS web
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install build essentials (no postgres libs needed since we use sqlite)
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Install python deps first (better caching)
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY . /app
 
-# Copy project files
-COPY . .
+# Create non-root user
+RUN useradd -m -u 1000 appuser \
+    && chown -R appuser:appuser /app
+USER appuser
 
-# Copy compiled Tailwind CSS from Node stage
-COPY --from=assets /app/theme/static/css/dist/styles.css ./theme/static/css/dist/styles.css
+# Default environment (override via compose/.env)
+ENV DJANGO_SETTINGS_MODULE=core.settings.prod
 
 EXPOSE 8000
 
-# Run Gunicorn with Django (core is your project)
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD [ "python", "manage.py", "runserver"]
