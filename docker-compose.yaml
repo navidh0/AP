@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: django_web
+    env_file:
+      - .env
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static:/static
+      - media:/media
+      - ./db.sqlite3:/app/db.sqlite3  # keep sqlite data persistent
+
+  nginx:
+    image: nginx:alpine
+    container_name: django_nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - static:/static:ro
+      - media:/media:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  static:
+  media:
