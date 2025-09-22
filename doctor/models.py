@@ -15,12 +15,14 @@ class DoctorQuerySet(models.QuerySet):
 
     def search(self, name=None, specialty=None):
         """Search doctors by name, specialty, or both."""
+        from django.db.models import Q
         qs = self
         if name:
             qs = qs.filter(
                 Q(user__username__icontains=name)
                 | Q(user__first_name__icontains=name)
                 | Q(user__last_name__icontains=name)
+                | Q(user__email__icontains=name)
             )
         if specialty:
             qs = qs.filter(specialty__icontains=specialty)

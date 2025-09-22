@@ -131,7 +131,7 @@
         {% elif user_has_commented %}
             <span class="text-gray-500">You have already reviewed this doctor</span>
         {% elif not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{% url 'users:login' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Login to Review
             </a>
         {% endif %}
